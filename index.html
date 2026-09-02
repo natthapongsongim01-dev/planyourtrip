@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+    <!DOCTYPE html>
 <html lang="th">
 <head>
     <meta charset="UTF-8">
@@ -363,7 +363,7 @@
     <!-- Header -->
     <div class="app-header">
         <h1>✈️ Travel Companion</h1>
-        <p>คำนวณวันพัก • งบประมาณ • นำทาง</p>
+        <p>คำนวณวันพัก • งบโรงแรม • นำทางถึงที่พัก</p>
     </div>
 
     <!-- Navigation Tabs -->
@@ -378,4 +378,325 @@
         <h2>กำหนดแผนการเดินทาง</h2>
         
         <div class="form-group">
-            <label class=
+            <label class="label">📍 จุดเริ่มต้น (จังหวัด)</label>
+            <select class="select" id="origin">
+                <option value="กรุงเทพมหานคร">กรุงเทพมหานคร</option>
+                <option value="เชียงใหม่">เชียงใหม่</option>
+                <option value="ขอนแก่น">ขอนแก่น</option>
+                <option value="สุโขทัย">สุโขทัย</option>
+                <option value="สงขลา">สงขลา</option>
+                <option value="ภูเก็ต">ภูเก็ต</option>
+                <option value="ชลบุรี">ชลบุรี</option>
+                <option value="นครราชสีมา">นครราชสีมา</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label class="label">🏖️ จุดหมายปลายทางยอดฮิต</label>
+            <select class="select" id="destination">
+                <option value="เชียงใหม่" data-travel="1500" data-transport="รถยนต์ส่วนตัว / เครื่องบิน" data-hotelprice="1400" data-hotelname="The Chiang Mai Old Town" data-img="https://images.unsplash.com/photo-1599940824399-b87987ceb72a" data-desc="สัมผัสอากาศหนาวบนยอดดอย เที่ยวคาเฟ่สุดชิคใจกลางเมืองเชียงใหม่" data-contact="053-123-456" data-rest1="ตองกاست (อาหารเหนือพื้นถิ่น)" data-rest2="Khao Soi Mae Sai (ข้าวซอยไก่ชื่อดัง)" data-mapkey="The Chiang Mai Old Town" data-amenities="ฟรี Wi-Fi, สระว่ายน้ำ, อาหารเช้า, ใกล้ถนนคนเดิน">เชียงใหม่ (ดอยอินทนนท์)</option>
+
+                <option value="บางแสน, ชลบุรี" data-travel="800" data-transport="รถยนต์ส่วนตัว / รถตู้" data-hotelprice="1200" data-hotelname="Loft Resort Bangsaen" data-img="https://images.unsplash.com/photo-1566073771259-6a8506099945" data-desc="พักผ่อนริมหาดบางแสน ใกล้กรุงเทพฯ คาเฟ่ริมทะเลเพียบ" data-contact="081-234-5678" data-rest1="ร้านอาหารป้าไหม (ซีฟู้ดสดๆ)" data-rest2="Washi Bangsaen (อาหารญี่ปุ่น)" data-mapkey="Loft Resort Bangsaen" data-amenities="ติดทะเล, ที่จอดรถกว้าง, คาเฟ่ในตัว, ปิ้งย่างริมหาด">บางแสน, ชลบุรี</option>
+
+                <option value="ภูเก็ต" data-travel="2500" data-transport="เครื่องบิน + รถตู้สนามบิน" data-hotelprice="2200" data-hotelname="Phuket Heritage Hotel" data-img="https://images.unsplash.com/photo-1589394815804-964ed0be2eb5" data-desc="ตึกชิโนโปรตุกีสสุดคลาสสิก หาดทรายขาว และอาหารใต้รสเด็ด" data-contact="076-211-555" data-rest1="วันจันทร์ (อาหารพื้นเมืองภูเก็ต)" data-rest2="โกเบนซ์ ข้าวต้มแห้ง (มิชลิน)" data-mapkey="Phuket Heritage Hotel" data-amenities="สระว่ายน้ำบนดาดฟ้า, บริการรถรับส่งสนามบิน, ฟิตเนส">ภูเก็ต (ป่าตอง)</option>
+
+                <option value="เขาใหญ่" data-travel="1200" data-transport="รถยนต์ส่วนตัว / รถตู้" data-hotelprice="1600" data-hotelname="Rouge Valley Khaoyai" data-img="https://images.unsplash.com/photo-1513836279014-a89f7a76ae86" data-desc="สูดโอโซนบริสุทธิ์ ขับรถชมธรรมชาติอุทยานแห่งชาติเขาใหญ่" data-contact="044-322-111" data-rest1="บ้านอีสาน (อาหารอีสานแซ่บ)" data-rest2="PenLaos เป็นลาว (ส้มตำ ไก่ย่าง)" data-mapkey="Rouge Valley Khaoyai" data-amenities="วิวภูเขา 360 องศา, เตาปิ้งย่างส่วนตัว, สัตว์เลี้ยงเข้าพักได้">เขาใหญ่, นครราชสีมา</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label class="label">📅 ระยะเวลาท่องเที่ยว (จำนวนวัน)</label>
+            <select class="select" id="trip-days">
+                <option value="2">2 วัน 1 คืน</option>
+                <option value="3" selected>3 วัน 2 คืน</option>
+                <option value="4">4 วัน 3 คืน</option>
+                <option value="5">5 วัน 4 คืน</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label class="label">🏨 รูปแบบการเลือกโรงแรม</label>
+            <select class="select" id="hotel-mode" onchange="toggleHotelMode()">
+                <option value="default">ใช้โรงแรมแนะนำของระบบ</option>
+                <option value="custom">กำหนดเอง (ระบุชื่อโรงแรมและราคาเอง)</option>
+            </select>
+        </div>
+
+        <div id="custom-hotel-box" style="display: none; background: #F8FAFC; padding: 8px; border-radius: 8px; border: 1px dashed var(--border-color); margin-bottom: 6px;">
+            <div class="form-group" style="margin-bottom: 4px;">
+                <label class="label" style="font-size: 10px;">ชื่อโรงแรม / รีสอร์ท ที่ต้องการ</label>
+                <input type="text" class="input" id="custom-hotel-name" placeholder="เช่น โรงแรมฮิปสเตอร์ รีสอร์ท เชียงใหม่">
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+                <label class="label" style="font-size: 10px;">ราคาต่อคืน (บาท)</label>
+                <input type="number" class="input" id="custom-hotel-price" placeholder="1500" value="1200">
+            </div>
+        </div>
+
+        <button class="btn btn-primary" onclick="calculateAndProceed()">
+            <span>คำนวณและดูข้อมูลทริป</span> ➔
+        </button>
+    </div>
+
+    <!-- หน้าจอที่ 2: รายละเอียดสถานที่และโรงแรม -->
+    <div class="screen" id="screen-1">
+        <div class="place-img-container">
+            <img id="place-img" src="" alt="Place Image" class="place-img">
+            <span class="badge" id="place-badge">ที่พัก</span>
+        </div>
+        
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h2 id="place-name" style="margin-bottom: 2px; font-size: 13px;">ชื่อที่พัก</h2>
+            <button class="btn btn-info" onclick="openHotelModal()">🔍 ดูรายละเอียด</button>
+        </div>
+        <p id="place-price" style="color: var(--primary); font-weight: 600; font-size: 11px; margin-bottom: 4px;"></p>
+        <p id="place-desc" style="color: var(--text-secondary); font-size: 11px; line-height: 1.3; margin-bottom: 6px;"></p>
+
+        <div class="info-block" style="background: #FEF3C7; border: 1px solid #F59E0B; padding: 6px 10px;">
+            <h3 style="color: #D97706; font-size: 11px;">⏰ แนะนำเวลาควรออกเดินทาง</h3>
+            <p id="depart-time-advice" style="font-weight: 600; color: #92400E; font-size: 11px;">-</p>
+        </div>
+
+        <div class="info-block" style="padding: 6px 10px;">
+            <h3 style="font-size: 11px;">🚗 การเดินทาง & ระยะเวลา</h3>
+            <p id="transport-detail" style="font-size: 11px;">-</p>
+        </div>
+
+        <div class="info-block" style="padding: 6px 10px;">
+            <h3 style="font-size: 11px;">🍽️ ร้านอาหารแนะนำ</h3>
+            <div class="restaurant-card" id="rest-1">• -</div>
+            <div class="restaurant-card" id="rest-2">• -</div>
+        </div>
+
+        <div style="display: flex; gap: 8px; margin-top: auto;">
+            <button class="btn btn-secondary" style="flex: 1; margin-top:0; padding: 8px;" onclick="switchTab(0)">ย้อนกลับ</button>
+            <button class="btn btn-primary" style="flex: 1; margin-top:0; padding: 8px;" onclick="switchTab(2)">สรุปงบ & แผนที่</button>
+        </div>
+    </div>
+
+    <!-- หน้าจอที่ 3: สรุปงบประมาณและ Google Maps -->
+    <div class="screen" id="screen-2">
+        <h2 style="margin-bottom: 4px;">สรุปค่าใช้จ่ายทั้งหมด</h2>
+        
+        <div class="card" style="margin-bottom: 6px; padding: 8px;">
+            <div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 4px;">
+                เส้นทาง & ระยะเวลา: <strong id="sum-route" style="color: var(--text-main);">-</strong>
+            </div>
+            
+            <!-- ตารางสรุปค่าใช้จ่ายแบบละเอียดตามจำนวนวัน -->
+            <table class="cost-table">
+                <thead>
+                    <tr>
+                        <th>รายการ</th>
+                        <th>รายละเอียด</th>
+                        <th>จำนวนเงิน</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>ค่าเดินทาง</td>
+                        <td id="table-trans-text" style="font-size: 10px; color: var(--text-secondary);">-</td>
+                        <td id="table-trans-cost">0 บ.</td>
+                    </tr>
+                    <tr>
+                        <td>ค่าที่พัก</td>
+                        <td id="table-hotel-text" style="font-size: 10px; color: var(--text-secondary);">-</td>
+                        <td id="table-hotel-cost">0 บ.</td>
+                    </tr>
+                    <tr>
+                        <td>ค่าอาหาร</td>
+                        <td id="table-food-text" style="font-size: 10px; color: var(--text-secondary);">อาหารมื้อหลัก + ทานเล่น</td>
+                        <td id="table-food-cost">0 บ.</td>
+                    </tr>
+                    <tr>
+                        <td>เผื่อฉุกเฉิน</td>
+                        <td>สำรองจ่าย (10%)</td>
+                        <td id="table-reserve-cost">0 บ.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="summary-total-box">
+                <span>ยอดรวมงบประมาณทั้งสิ้น:</span>
+                <strong id="sum-total">0 บาท</strong>
+            </div>
+        </div>
+
+        <div class="info-block" style="margin-bottom: 6px; padding: 6px 8px;">
+            <h3 style="margin-bottom: 2px; font-size: 11px;">🗺️ แผนที่นำทางตรงสู่โรงแรม</h3>
+            <div class="map-box">
+                <iframe id="google-map-frame" src="" allowfullscreen="" loading="lazy"></iframe>
+            </div>
+            <a id="gmap-link" href="#" target="_blank" class="btn btn-map" style="margin-top: 4px; padding: 6px;">
+                📍 เปิดนำทางจริงไปที่โรงแรมใน Google Maps
+            </a>
+        </div>
+
+        <button class="btn btn-primary" style="background-color: var(--success); margin-top: auto; padding: 8px;" onclick="saveTrip()">
+            ✨ บันทึกทริปของฉัน
+        </button>
+        
+        <div class="success-banner" id="success-banner">
+            🎉 บันทึกทริปสำเร็จ!
+        </div>
+    </div>
+
+    <!-- Modal สำหรับดูรายละเอียดโรงแรม -->
+    <div class="modal" id="hotel-modal">
+        <div class="modal-content">
+            <h3 id="modal-hotel-title" style="color: var(--primary); font-size: 14px; margin-bottom: 4px;">ชื่อโรงแรม</h3>
+            <p id="modal-hotel-desc" style="font-size: 11px; color: var(--text-secondary); margin-bottom: 6px;"></p>
+            <div style="background: var(--primary-light); padding: 6px 8px; border-radius: 8px; margin-bottom: 8px;">
+                <p style="font-size: 10px; font-weight: 700; color: var(--primary); margin-bottom: 2px;">✨ สิ่งอำนวยความสะดวก:</p>
+                <p id="modal-hotel-amenities" style="font-size: 10px; color: var(--text-main);">-</p>
+            </div>
+            <div style="margin-bottom: 10px;">
+                <p style="font-size: 10px; color: var(--text-secondary);">📞 ติดต่อสอบถาม:</p>
+                <p id="modal-hotel-contact" style="font-size: 11px; font-weight: 600; color: var(--text-main);">-</p>
+            </div>
+            <button class="btn btn-primary" style="padding: 7px; font-size: 11px;" onclick="closeHotelModal()">ปิดหน้าต่าง</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentHotelData = {};
+
+    function switchTab(index) {
+        const screens = document.querySelectorAll('.screen');
+        const tabs = document.querySelectorAll('.tab-btn');
+
+        screens.forEach((screen, i) => {
+            screen.classList.toggle('active', i === index);
+            tabs[i].classList.toggle('active', i === index);
+        });
+    }
+
+    function toggleHotelMode() {
+        const mode = document.getElementById('hotel-mode').value;
+        const customBox = document.getElementById('custom-hotel-box');
+        customBox.style.display = (mode === 'custom') ? 'block' : 'none';
+    }
+
+    function openHotelModal() {
+        document.getElementById('modal-hotel-title').textContent = currentHotelData.name;
+        document.getElementById('modal-hotel-desc').textContent = currentHotelData.desc;
+        document.getElementById('modal-hotel-amenities').textContent = currentHotelData.amenities;
+        document.getElementById('modal-hotel-contact').textContent = `โทรศัพท์ / ไลน์: ${currentHotelData.contact}`;
+        document.getElementById('hotel-modal').style.display = 'flex';
+    }
+
+    function closeHotelModal() {
+        document.getElementById('hotel-modal').style.display = 'none';
+    }
+
+    function calculateAndProceed() {
+        const origin = document.getElementById('origin').value;
+        const select = document.getElementById('destination');
+        const selectedOption = select.options[select.selectedIndex];
+        const hotelMode = document.getElementById('hotel-mode').value;
+        const totalDays = parseInt(document.getElementById('trip-days').value);
+        const totalNights = totalDays - 1; // จำนวนคืน = จำนวนวัน - 1
+
+        const destName = selectedOption.value;
+        const travelCost = parseInt(selectedOption.getAttribute('data-travel'));
+        const transportInfo = selectedOption.getAttribute('data-transport');
+        const rest1 = selectedOption.getAttribute('data-rest1');
+        const rest2 = selectedOption.getAttribute('data-rest2');
+        const defaultMapKey = selectedOption.getAttribute('data-mapkey');
+
+        let hotelPricePerNight = 0;
+        let hotelName = "";
+        let hotelImg = selectedOption.getAttribute('data-img');
+        let hotelDesc = "";
+        let hotelContact = "";
+        let hotelAmenities = "";
+        let finalMapKey = "";
+
+        if (hotelMode === 'custom') {
+            hotelName = document.getElementById('custom-hotel-name').value || "โรงแรมที่คุณระบุเอง";
+            hotelPricePerNight = parseInt(document.getElementById('custom-hotel-price').value) || 1200;
+            hotelDesc = "เป็นโรงแรมที่คุณเลือกและระบุรายละเอียดด้วยตนเอง สะดวกในการควบคุมงบประมาณ";
+            hotelContact = "ติดต่อผ่านช่องทางส่วนตัวของผู้ให้บริการโรงแรม";
+            hotelAmenities = "ตามเงื่อนไขของโรงแรมที่คุณเลือกเอง";
+            // ใช้ชื่อโรงแรมที่ผู้ใช้พิมพ์เป็นเป้าหมายนำทางในแผนที่
+            finalMapKey = hotelName;
+        } else {
+            hotelName = selectedOption.getAttribute('data-hotelname');
+            hotelPricePerNight = parseInt(selectedOption.getAttribute('data-hotelprice'));
+            hotelDesc = selectedOption.getAttribute('data-desc');
+            hotelContact = selectedOption.getAttribute('data-contact');
+            hotelAmenities = selectedOption.getAttribute('data-amenities');
+            // ใช้ชื่อโรงแรมแนะนำเป็นเป้าหมายนำทางในแผนที่
+            finalMapKey = defaultMapKey;
+        }
+
+        // คำนวณค่าโรงแรมรวมทั้งหมดตามจำนวนคืน
+        const totalHotelCost = hotelPricePerNight * totalNights;
+
+        // เก็บข้อมูลไว้แสดงใน Modal
+        currentHotelData = {
+            name: hotelName,
+            desc: hotelDesc,
+            contact: hotelContact,
+            amenities: hotelAmenities
+        };
+
+        // คำนวณเวลาออกเดินทาง
+        let departAdvice = "ควรออกเดินทางเวลา 06:00 น. เพื่อหลีกเลี่ยงรถติด";
+        if (travelCost > 2000) {
+            departAdvice = "ควรออกเดินทางเวลา 05:00 น. หรือเลือกเดินทางล่วงหน้า";
+        } else if (travelCost < 1000) {
+            departAdvice = "ควรออกเดินทางเวลา 07:30 น. ระยะทางใกล้ ใช้เวลาไม่นาน";
+        }
+
+        // แสดงผลหน้าจอรายละเอียด
+        document.getElementById('place-img').src = hotelImg;
+        document.getElementById('place-name').textContent = hotelName;
+        document.getElementById('place-price').textContent = `ที่พัก: ${hotelPricePerNight.toLocaleString()} บาท/คืน (${totalNights} คืน)`;
+        document.getElementById('place-desc').textContent = hotelDesc;
+        document.getElementById('depart-time-advice').textContent = departAdvice;
+        document.getElementById('transport-detail').textContent = `${origin} ➔ ${destName} (${totalDays} วัน ${totalNights} คืน) โดย: ${transportInfo}`;
+        document.getElementById('rest-1').textContent = `• ${rest1}`;
+        document.getElementById('rest-2').textContent = `• ${rest2}`;
+
+        // คำนวณงบประมาณตามจำนวนวันจริง
+        const totalFoodCost = totalDays * 600;
+        const subtotal = travelCost + totalHotelCost + totalFoodCost;
+        const reserve = Math.round(subtotal * 0.1);
+        const grandTotal = subtotal + reserve;
+
+        document.getElementById('sum-route').textContent = `${origin} ➔ ${destName} (${totalDays} วัน ${totalNights} คืน)`;
+        document.getElementById('table-trans-text').textContent = transportInfo;
+        document.getElementById('table-trans-cost').textContent = `${travelCost.toLocaleString()} บ.`;
+        
+        document.getElementById('table-hotel-text').textContent = `${hotelName} (${totalNights} คืน)`;
+        document.getElementById('table-hotel-cost').textContent = `${totalHotelCost.toLocaleString()} บ.`;
+        
+        document.getElementById('table-food-text').textContent = `เฉลี่ย ${totalDays} วัน`;
+        document.getElementById('table-food-cost').textContent = `${totalFoodCost.toLocaleString()} บ.`;
+        
+        document.getElementById('table-reserve-cost').textContent = `${reserve.toLocaleString()} บ.`;
+        document.getElementById('sum-total').textContent = `${grandTotal.toLocaleString()} บาท`;
+
+        // อัปเดตแผนที่และลิงก์นำทางให้พุ่งตรงไปยังโรงแรม
+        const mapUrl = `https://maps.google.com/maps?q=${encodeURIComponent(finalMapKey)}&t=&z=14&ie=UTF8&iwloc=&output=embed`;
+        document.getElementById('google-map-frame').src = mapUrl;
+        
+        const gmapDirectionUrl = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(finalMapKey)}`;
+        document.getElementById('gmap-link').href = gmapDirectionUrl;
+
+        switchTab(1);
+    }
+
+    function saveTrip() {
+        const banner = document.getElementById('success-banner');
+        banner.style.display = 'block';
+        setTimeout(() => {
+            banner.style.display = 'none';
+        }, 3000);
+    }
+</script>
+
+</body>
+</html>
