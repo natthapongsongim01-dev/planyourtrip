@@ -1,909 +1,744 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Travel Companion - วางแผนท่องเที่ยวและคำนวณงบประมาณ</title>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-:root{
-  --primary:#4F46E5; --primary-light:#EEF2FF; --primary-dark:#4338CA;
-  --success:#10B981; --warn:#D97706; --warn-bg:#FEF3C7; --warn-border:#F59E0B;
-  --bg-color:#F1F5F9; --card-bg:#FFFFFF; --text-main:#1E293B; --text-secondary:#64748B;
-  --border-color:#E2E8F0; --radius:16px;
-}
-*{box-sizing:border-box;margin:0;padding:0;font-family:'Plus Jakarta Sans',sans-serif;}
-body{background:var(--bg-color);color:var(--text-main);display:flex;justify-content:center;align-items:center;min-height:100vh;padding:12px;}
-.app-container{width:100%;max-width:430px;height:92vh;max-height:880px;background:var(--card-bg);border-radius:28px;box-shadow:0 10px 25px rgba(0,0,0,.1);overflow:hidden;display:flex;flex-direction:column;border:4px solid #334155;position:relative;}
-.app-header{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;padding:14px 16px 10px;text-align:center;}
-.app-header h1{font-size:16px;font-weight:700;}
-.app-header p{font-size:10.5px;opacity:.85;margin-top:2px;}
-.nav-tabs{display:flex;background:#F1F5F9;padding:4px;margin:8px 12px 0;border-radius:10px;gap:2px;}
-.tab-btn{flex:1;padding:6px 2px;background:none;border:none;color:var(--text-secondary);font-weight:600;font-size:9.5px;cursor:pointer;text-align:center;border-radius:8px;transition:all .2s ease;}
-.tab-btn.active{background:#fff;color:var(--primary);box-shadow:0 2px 4px rgba(0,0,0,.05);}
-.tab-btn:disabled{opacity:.4;cursor:not-allowed;}
-.screen{display:none;padding:14px 16px;overflow-y:auto;flex:1;}
-.screen.active{display:flex;flex-direction:column;animation:fadeIn .25s ease-in-out;}
-@keyframes fadeIn{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
-h2{font-size:14px;font-weight:700;margin-bottom:8px;}
-h3.section-title{font-size:11.5px;font-weight:700;margin:10px 0 6px;color:var(--text-main);}
-.form-group{margin-bottom:8px;}
-.label{display:block;font-weight:600;font-size:11px;margin-bottom:3px;color:var(--text-secondary);}
-.select,.input,textarea{width:100%;padding:8px 10px;border:1px solid var(--border-color);border-radius:10px;font-size:12px;background:#fff;color:var(--text-main);outline:none;}
-.select:focus,.input:focus{border-color:var(--primary);}
-.btn{width:100%;padding:10px;border:none;border-radius:10px;font-size:12px;font-weight:600;cursor:pointer;display:flex;justify-content:center;align-items:center;gap:6px;margin-top:6px;text-decoration:none;}
-.btn-primary{background:var(--primary);color:#fff;}
-.btn-primary:hover{background:var(--primary-dark);}
-.btn-secondary{background:#E2E8F0;color:var(--text-main);}
-.btn-outline{background:#fff;border:1px solid var(--primary);color:var(--primary);}
-.btn-info{background:#0284C7;color:#fff;font-size:10.5px;padding:6px 8px;width:auto;border-radius:8px;}
-.btn-map{background:#EA4335;color:#fff;font-size:11px;}
-.btn-sm{font-size:10.5px;padding:6px 8px;margin-top:4px;width:auto;}
-.row{display:flex;gap:8px;}
-.row > *{flex:1;}
-.toggle-group{display:flex;background:#F1F5F9;border-radius:10px;padding:3px;margin-bottom:8px;}
-.toggle-opt{flex:1;text-align:center;padding:7px 4px;font-size:11px;font-weight:600;color:var(--text-secondary);border-radius:8px;cursor:pointer;}
-.toggle-opt.active{background:#fff;color:var(--primary);box-shadow:0 2px 4px rgba(0,0,0,.06);}
-.card{background:#fff;border:1px solid var(--border-color);border-radius:var(--radius);padding:10px;margin-bottom:8px;}
-.place-img-container{position:relative;border-radius:8px;overflow:hidden;margin-bottom:6px;height:100px;}
-.place-img{width:100%;height:100%;object-fit:cover;}
-.badge{position:absolute;top:6px;left:6px;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);color:#fff;padding:2px 6px;border-radius:10px;font-size:10px;}
-.info-block{background:var(--primary-light);border-radius:10px;padding:8px 10px;margin-bottom:6px;}
-.info-block h3{font-size:11px;color:var(--primary);margin-bottom:2px;font-weight:700;}
-.info-block p{font-size:11px;line-height:1.35;}
-.note-block{background:var(--warn-bg);border:1px solid var(--warn-border);border-radius:10px;padding:7px 9px;margin-bottom:6px;}
-.note-block p{font-size:10.5px;color:#92400E;line-height:1.35;}
-.map-box{width:100%;height:95px;border-radius:8px;overflow:hidden;border:1px solid var(--border-color);margin-top:4px;}
-.map-box iframe{width:100%;height:100%;border:0;}
-.mode-option{border:1.5px solid var(--border-color);border-radius:10px;padding:8px;margin-bottom:6px;cursor:pointer;}
-.mode-option.selected{border-color:var(--primary);background:var(--primary-light);}
-.mode-option .mode-head{display:flex;justify-content:space-between;align-items:center;font-size:12px;font-weight:700;}
-.mode-option .mode-detail{font-size:10.5px;color:var(--text-secondary);margin-top:3px;line-height:1.35;}
-.chip-list{display:flex;flex-wrap:wrap;gap:5px;margin-top:4px;}
-.chip{background:var(--primary-light);color:var(--primary-dark);font-size:10px;font-weight:600;padding:3px 8px;border-radius:999px;}
-.cost-table{width:100%;border-collapse:collapse;margin-bottom:6px;font-size:11px;}
-.cost-table th,.cost-table td{padding:5px 6px;border-bottom:1px solid var(--border-color);text-align:left;}
-.cost-table th{color:var(--text-secondary);font-weight:600;background:#F8FAFC;}
-.cost-table td:last-child,.cost-table th:last-child{text-align:right;white-space:nowrap;}
-.summary-total-box{background:var(--primary-light);border:1px solid #C7D2FE;border-radius:10px;padding:8px 10px;display:flex;justify-content:space-between;align-items:center;margin-top:4px;}
-.summary-total-box span{font-size:11px;font-weight:700;color:var(--primary-dark);}
-.summary-total-box strong{font-size:14px;color:var(--primary);}
-.success-banner{background:#ECFDF5;color:#065F46;padding:8px;border-radius:8px;text-align:center;font-size:11px;font-weight:600;margin-top:6px;display:none;}
-.saved-trip{border:1px solid var(--border-color);border-radius:10px;padding:7px 9px;margin-bottom:6px;font-size:10.5px;display:flex;justify-content:space-between;align-items:center;}
-.small-muted{font-size:10px;color:var(--text-secondary);margin-top:3px;}
-.food-item{font-size:11px;padding:4px 0;border-bottom:1px dashed var(--border-color);}
-.geo-status{font-size:10px;color:var(--primary-dark);margin-top:3px;min-height:12px;}
-.hotel-card, .restaurant-card{border:1px solid var(--border-color);border-radius:14px;overflow:hidden;margin-bottom:8px;background:#fff;}
-.hotel-card.selected{border-color:var(--success);box-shadow:0 0 0 2px rgba(16,185,129,.25);}
-.hotel-card-img, .restaurant-card-img{width:100%;height:90px;object-fit:cover;display:block;}
-.hotel-card-body, .restaurant-card-body{padding:8px 9px;}
-.hotel-card-top, .restaurant-card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:6px;}
-.hotel-card-name, .restaurant-card-name{font-size:11.5px;font-weight:700;line-height:1.25;}
-.hotel-card-area, .restaurant-card-area{font-size:10px;color:var(--text-secondary);margin-top:1px;}
-.hotel-tier{font-size:9px;font-weight:700;padding:2px 6px;border-radius:999px;white-space:nowrap;}
-.tier-budget{background:#DCFCE7;color:#166534;}
-.tier-mid{background:#DBEAFE;color:#1E40AF;}
-.tier-luxury{background:#FEF3C7;color:#92400E;}
-.hotel-card-price{font-size:12px;font-weight:700;color:var(--primary-dark);margin-top:4px;}
-.hotel-card-blurb, .restaurant-card-blurb{font-size:10.5px;color:var(--text-secondary);margin-top:3px;line-height:1.35;}
-.hotel-card-actions, .restaurant-card-actions{display:flex;gap:6px;margin-top:7px;}
-.hotel-card-actions .btn, .restaurant-card-actions .btn{margin-top:0;padding:6px;font-size:10px;}
-.rating-badge{background:#FEF08A;color:#854D0E;font-size:10px;font-weight:700;padding:2px 6px;border-radius:999px;display:flex;align-items:center;gap:2px;}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travel 🧳 companion</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #7e57c2;
+            --primary-light: #b085f5;
+            --primary-dark: #4d2c91;
+            --secondary: #ff4081;
+            --bg-color: #f4f6f9;
+            --surface: #ffffff;
+            --text-main: #333333;
+            --text-light: #757575;
+            --border: #e0e0e0;
+            --radius: 12px;
+            --shadow: 0 4px 15px rgba(0,0,0,0.08);
+            --shadow-hover: 0 8px 25px rgba(126, 87, 194, 0.2);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Prompt', sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-main); overflow-x: hidden; }
+
+        /* Custom Toast Notification (แทน alert) */
+        #toast {
+            position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%);
+            background-color: var(--primary-dark); color: white; padding: 12px 24px;
+            border-radius: 30px; z-index: 9999; transition: bottom 0.4s ease-in-out;
+            box-shadow: var(--shadow); font-weight: 500;
+        }
+        #toast.show { bottom: 30px; }
+
+        /* Navbar */
+        nav {
+            background-color: var(--primary); color: white; padding: 1rem 2rem;
+            display: flex; justify-content: space-between; align-items: center;
+            box-shadow: var(--shadow); position: sticky; top: 0; z-index: 1000;
+        }
+        .logo { font-size: 1.5rem; font-weight: 700; display: flex; align-items: center; gap: 10px; cursor: pointer; }
+        .user-menu { display: none; align-items: center; gap: 15px; }
+        .btn-outline { border: 1px solid white; background: transparent; color: white; padding: 6px 16px; border-radius: 20px; cursor: pointer; transition: 0.3s; font-size: 0.9rem; }
+        .btn-outline:hover { background: white; color: var(--primary); }
+
+        /* Views Container */
+        .view { display: none; min-height: calc(100vh - 70px); padding: 2rem; animation: fadeIn 0.4s ease-out; }
+        .view.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Buttons & Inputs */
+        .btn-primary { background-color: var(--primary); color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 500; transition: 0.3s; width: 100%; font-size: 1rem; }
+        .btn-primary:hover { background-color: var(--primary-dark); box-shadow: var(--shadow-hover); }
+        .btn-secondary { background-color: var(--secondary); color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 500; transition: 0.3s; width: 100%; font-size: 1rem; }
+        .btn-secondary:hover { background-color: #d81b60; box-shadow: 0 4px 15px rgba(255, 64, 129, 0.3); }
+        
+        input, select { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; margin-top: 5px; margin-bottom: 15px; outline: none; font-size: 1rem; transition: 0.3s; }
+        input:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(126, 87, 194, 0.2); }
+
+        /* Auth View */
+        #view-auth { display: flex; align-items: center; justify-content: center; }
+        #view-auth:not(.active) { display: none; }
+        .auth-card { background: var(--surface); padding: 3rem; border-radius: var(--radius); box-shadow: var(--shadow); width: 100%; max-width: 450px; text-align: center; }
+        .auth-card h2 { color: var(--primary); margin-bottom: 10px; }
+        .auth-card p { color: var(--text-light); margin-bottom: 25px; }
+        .toggle-auth { color: var(--primary); cursor: pointer; font-weight: 600; text-decoration: underline; }
+
+        /* Dashboard View */
+        .header-title { text-align: center; margin-bottom: 2rem; }
+        .header-title h2 { color: var(--primary-dark); font-size: 2rem; }
+        .selector-card { background: var(--surface); padding: 2rem; border-radius: var(--radius); box-shadow: var(--shadow); max-width: 600px; margin: 0 auto; }
+
+        /* Planner Grid */
+        .planner-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 24px; max-width: 1200px; margin: 0 auto; }
+        .card { background: var(--surface); padding: 1.5rem; border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 24px; }
+        .card h3 { color: var(--primary-dark); margin-bottom: 15px; display: flex; align-items: center; gap: 10px; border-bottom: 2px solid var(--bg-color); padding-bottom: 10px; }
+
+        /* Radio Options */
+        .options-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 15px; }
+        .option-label { display: block; position: relative; cursor: pointer; height: 100%; }
+        .option-label input { position: absolute; opacity: 0; cursor: pointer; }
+        .option-content { border: 2px solid var(--border); border-radius: var(--radius); padding: 15px; transition: 0.3s; height: 100%; display: flex; flex-direction: column; background: var(--surface); }
+        .option-label input:checked ~ .option-content { border-color: var(--primary); background-color: rgba(126, 87, 194, 0.05); }
+        .option-img { width: 100%; height: 160px; object-fit: cover; border-radius: 8px; margin-bottom: 12px; }
+        .badge { background: var(--primary-light); color: white; padding: 3px 10px; border-radius: 12px; font-size: 0.8rem; font-weight: 500; }
+        .price-tag { color: var(--secondary); font-weight: 700; font-size: 1.2rem; margin: 8px 0; }
+
+        /* Budget Table */
+        .budget-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        .budget-table td { padding: 12px 0; border-bottom: 1px dashed var(--border); }
+        .budget-table tr:last-child td { border-bottom: none; }
+        .total-row { font-weight: 700; font-size: 1.3rem; color: var(--primary-dark); border-top: 2px solid var(--border) !important; padding-top: 15px !important;}
+
+        /* History */
+        .history-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px; max-width: 1200px; margin: 0 auto; }
+        
+        @media (max-width: 900px) {
+            .planner-grid { grid-template-columns: 1fr; }
+            .user-menu span { display: none; }
+        }
+    </style>
 </head>
 <body>
-<div class="app-container">
-  <div class="app-header">
-    <h1>✈️ Travel Companion</h1>
-    <p>วางแผนเส้นทาง • ที่พัก • ร้านอาหาร • งบประมาณทริป</p>
-  </div>
 
-  <div class="nav-tabs">
-    <button class="tab-btn active" data-tab="0" onclick="switchTab(0)">1.เส้นทาง</button>
-    <button class="tab-btn" data-tab="1" onclick="switchTab(1)" disabled>2.ที่พัก/เดินทาง</button>
-    <button class="tab-btn" data-tab="2" onclick="switchTab(2)" disabled>3.ร้านอาหาร</button>
-    <button class="tab-btn" data-tab="3" onclick="switchTab(3)" disabled>4.สรุปงบ</button>
-  </div>
+    <!-- Toast Notification -->
+    <div id="toast">Message</div>
 
-  <div class="screen active" id="screen-0">
-    <h2>กำหนดต้นทาง-ปลายทาง</h2>
-
-    <div class="form-group">
-      <label class="label">📍 จุดเริ่มต้น (จังหวัด)</label>
-      <select class="select" id="origin-province"></select>
-      <button class="btn btn-outline btn-sm" style="margin-top:5px;" onclick="useMyLocation()">📡 ใช้ตำแหน่งปัจจุบันของฉัน</button>
-      <div class="geo-status" id="geo-status"></div>
-    </div>
-
-    <div class="form-group">
-      <label class="label">🏖️ รูปแบบปลายทาง</label>
-      <div class="toggle-group">
-        <div class="toggle-opt active" id="opt-popular" onclick="setDestMode('popular')">จุดหมายยอดฮิต</div>
-        <div class="toggle-opt" id="opt-custom" onclick="setDestMode('custom')">กำหนดเอง</div>
-      </div>
-    </div>
-
-    <div id="popular-dest-box" class="form-group">
-      <label class="label">เลือกจุดหมายยอดฮิต</label>
-      <select class="select" id="destination-popular"></select>
-    </div>
-
-    <div id="custom-dest-box" class="form-group" style="display:none;">
-      <label class="label">จังหวัดปลายทาง</label>
-      <select class="select" id="destination-province-custom"></select>
-      <label class="label" style="margin-top:6px;">ชื่อสถานที่ / อำเภอที่ต้องการไป (ถ้ามี)</label>
-      <input class="input" id="custom-place-name" placeholder="เช่น อำเภอปาย, หาดใหญ่, น้ำตกเอราวัณ">
-      <div class="note-block" style="margin-top:6px;">
-        <p>ระบบยังไม่มีข้อมูลที่พัก/ร้านอาหารเฉพาะของจุดหมายนี้ ระยะทางและค่าเดินทางจะคำนวณโดยประมาณจากพิกัดจังหวัด และจะมีลิงก์ให้ค้นหาข้อมูลจริงเพิ่มเติมในขั้นตอนถัดไป</p>
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label class="label">📅 ระยะเวลาท่องเที่ยว</label>
-      <select class="select" id="trip-days-select" onchange="toggleCustomDays()">
-        <option value="2">2 วัน 1 คืน</option>
-        <option value="3" selected>3 วัน 2 คืน</option>
-        <option value="4">4 วัน 3 คืน</option>
-        <option value="5">5 วัน 4 คืน</option>
-        <option value="7">7 วัน 6 คืน</option>
-        <option value="custom">กำหนดเอง...</option>
-      </select>
-      <input class="input" type="number" min="1" max="60" id="trip-days-custom" placeholder="ระบุจำนวนวัน" style="display:none;margin-top:6px;">
-    </div>
-
-    <button class="btn btn-primary" style="margin-top:auto;" onclick="goToStep2()">
-      <span>ถัดไป: เลือกที่พัก & การเดินทาง</span> ➔
-    </button>
-  </div>
-
-  <div class="screen" id="screen-1">
-    <div class="place-img-container">
-      <img id="place-img" src="" alt="" class="place-img">
-      <span class="badge" id="place-badge">ปลายทาง</span>
-    </div>
-    <h2 id="place-name" style="font-size:13px;margin-bottom:2px;">-</h2>
-    <p id="place-desc" style="font-size:11px;color:var(--text-secondary);line-height:1.35;margin-bottom:6px;"></p>
-
-    <h3 class="section-title">🚗 เลือกวิธีเดินทาง</h3>
-    <div id="mode-list"></div>
-    <div class="note-block" id="mode-note" style="display:none;"><p></p></div>
-
-    <h3 class="section-title">🏨 ที่พัก (เชื่อมโยงกับปลายทาง: <span id="hotel-dest-label">-</span>)</h3>
-    <div id="recommended-areas" class="chip-list"></div>
-
-    <h3 class="section-title" style="margin-top:8px;">⭐ ที่พักแนะนำในจุดหมายนี้</h3>
-    <div id="hotel-recommend-box"></div>
-    <div class="note-block" id="hotel-recommend-note" style="display:none;">
-      <p>รูปภาพเป็นภาพประกอบทั่วไป ไม่ใช่ภาพถ่ายจริงของแต่ละที่พัก และช่วงราคาเป็นค่าประมาณการสำหรับตั้งงบเท่านั้น ราคาจริงเปลี่ยนแปลงตามฤดูกาลและวันเข้าพัก กด "เช็คราคาจริง" เพื่อดูราคาปัจจุบันก่อนตัดสินใจจอง</p>
-    </div>
-
-    <h3 class="section-title" style="margin-top:8px;">🔍 หรือค้นหา/ระบุที่พักเอง</h3>
-    <div class="row">
-      <a class="btn btn-info" id="btn-search-booking" href="#" target="_blank">🔎 ค้นหาที่พักจริง (Booking.com)</a>
-      <a class="btn btn-info" id="btn-search-agoda" href="#" target="_blank">🔎 ค้นหาที่พักจริง (Agoda)</a>
-    </div>
-    <div class="form-group" style="margin-top:8px;">
-      <label class="label">ชื่อที่พักที่เลือก (จะกรอกอัตโนมัติเมื่อกด "เลือกที่พักนี้" ด้านบน หรือพิมพ์เองได้)</label>
-      <input class="input" id="hotel-name" placeholder="ระบุชื่อที่พักที่คุณเลือก">
-    </div>
-    <div class="row">
-      <div class="form-group">
-        <label class="label">ราคา/คืน (บาท)</label>
-        <input class="input" type="number" min="0" id="hotel-price" placeholder="เช่น 1200" value="1200">
-      </div>
-      <div class="form-group">
-        <label class="label">ช่องทางติดต่อที่พัก</label>
-        <input class="input" id="hotel-contact" placeholder="เบอร์โทร/Line/เว็บที่จอง">
-      </div>
-    </div>
-    <div class="note-block"><p>💡 ราคาด้านบนเป็นตัวเลขโดยประมาณสำหรับตั้งงบเท่านั้น กรุณากดปุ่มค้นหาด้านบนเพื่อดูราคาจริงและช่องทางติดต่อล่าสุดก่อนจองจริง</p></div>
-
-    <div class="row" style="margin-top:auto;">
-      <button class="btn btn-secondary" onclick="switchTab(0)">ย้อนกลับ</button>
-      <button class="btn btn-primary" onclick="goToStep3()">ถัดไป: ร้านอาหาร ➔</button>
-    </div>
-  </div>
-
-  <div class="screen" id="screen-2">
-    <h2>ร้านอาหารแนะนำใกล้ที่พัก</h2>
-    
-    <div class="info-block" style="background:#F0FDF4; border: 1px solid #BBF7D0;">
-      <h3 style="color:#166534;">🏨 อิงจากที่พักของคุณ: <span id="current-hotel-display" style="font-weight:700;">-</span></h3>
-      <p style="color:#166534;">ระบบจัดเตรียมรายชื่อร้านยอดฮิต และลิงก์ค้นหาร้านแบบสดๆ โดยอิงจากพิกัดที่พักของคุณเพื่อให้เดินทางสะดวกที่สุด</p>
-    </div>
-
-    <a class="btn btn-map" id="btn-search-restaurants-nearby" href="#" target="_blank" style="margin-bottom: 8px;">
-      📍 ค้นหาร้านอาหารบริเวณที่พัก (Google Maps สด)
-    </a>
-
-    <h3 class="section-title">🍽️ ร้านอร่อยยอดฮิต รีวิวดีเยี่ยมในพื้นที่</h3>
-    <div id="restaurant-recommend-box"></div>
-    <div class="note-block" id="restaurant-recommend-note" style="display:none;">
-      <p>รายชื่อร้านอาหารด้านบนเป็นร้านชื่อดังที่ได้คะแนนรีวิวสูง ใช้ข้อมูลจริง กดปุ่ม "🗺️ นำทางไปร้านนี้" เพื่อเปิด Google Maps จากที่พักของคุณไปยังร้านได้ทันที</p>
-    </div>
-
-    <h3 class="section-title" style="margin-top:12px;">🔍 ค้นหาและระบุร้านอาหารด้วยตนเอง</h3>
-    <div class="form-group">
-      <div class="row">
-        <input class="input" id="picked-rest-1" placeholder="พิมพ์ชื่อร้านที่สนใจ">
-        <button class="btn btn-info btn-sm" onclick="openRestaurantMap('picked-rest-1')">ค้นหาบนแผนที่</button>
-      </div>
-      <div class="row" style="margin-top:6px;">
-        <input class="input" id="picked-rest-2" placeholder="พิมพ์ชื่อร้านที่สนใจ">
-        <button class="btn btn-info btn-sm" onclick="openRestaurantMap('picked-rest-2')">ค้นหาบนแผนที่</button>
-      </div>
-    </div>
-
-    <h3 class="section-title">🗺️ แผนที่ที่พักของคุณ</h3>
-    <div class="map-box"><iframe id="google-map-frame" src="" loading="lazy"></iframe></div>
-
-    <div class="row" style="margin-top:auto; padding-top:12px;">
-      <button class="btn btn-secondary" onclick="switchTab(1)">ย้อนกลับ</button>
-      <button class="btn btn-primary" onclick="goToStep4()">ถัดไป: สรุปงบ ➔</button>
-    </div>
-  </div>
-
-  <div class="screen" id="screen-3">
-    <h2 style="margin-bottom:4px;">สรุปค่าใช้จ่ายทั้งหมด</h2>
-    <div class="card" style="padding:8px;">
-      <div style="font-size:11px;color:var(--text-secondary);margin-bottom:4px;">
-        เส้นทาง: <strong id="sum-route" style="color:var(--text-main);">-</strong>
-      </div>
-
-      <div class="row" style="margin-bottom:6px;">
-        <div class="form-group" style="margin-bottom:0;">
-          <label class="label">ค่าอาหาร/คน/วัน (บาท)</label>
-          <input class="input" type="number" min="0" id="food-per-day" value="600" oninput="renderSummary()">
+    <!-- Navbar -->
+    <nav>
+        <div class="logo" onclick="app.showDashboardIfLogged()">
+            <i class="fa-solid fa-suitcase-rolling"></i> Travel companion
         </div>
-        <div class="form-group" style="margin-bottom:0;">
-          <label class="label">ค่าเที่ยว/ช้อปปิ้ง รวม (บาท)</label>
-          <input class="input" type="number" min="0" id="activity-budget" value="1000" oninput="renderSummary()">
+        <div class="user-menu" id="user-menu">
+            <span id="user-display-name">สวัสดี, ผู้ใช้</span>
+            <button class="btn-outline" onclick="app.showDashboard()"><i class="fa-solid fa-home"></i> แดชบอร์ด</button>
+            <button class="btn-outline" onclick="app.showHistory()"><i class="fa-solid fa-clock-rotate-left"></i> ประวัติ</button>
+            <button class="btn-outline" onclick="auth.logout()"><i class="fa-solid fa-sign-out-alt"></i> ออกจากระบบ</button>
         </div>
-      </div>
+    </nav>
 
-      <table class="cost-table">
-        <thead><tr><th>รายการ</th><th>รายละเอียด</th><th>จำนวนเงิน</th></tr></thead>
-        <tbody>
-          <tr><td>ค่าเดินทาง</td><td id="table-trans-text" style="font-size:10px;color:var(--text-secondary);">-</td><td id="table-trans-cost">0 บ.</td></tr>
-          <tr><td>ค่าที่พัก</td><td id="table-hotel-text" style="font-size:10px;color:var(--text-secondary);">-</td><td id="table-hotel-cost">0 บ.</td></tr>
-          <tr><td>ค่าอาหาร</td><td id="table-food-text" style="font-size:10px;color:var(--text-secondary);">-</td><td id="table-food-cost">0 บ.</td></tr>
-          <tr><td>เที่ยว/ช้อปปิ้ง</td><td style="font-size:10px;color:var(--text-secondary);">ตามที่ระบุ</td><td id="table-activity-cost">0 บ.</td></tr>
-          <tr><td>เผื่อฉุกเฉิน</td><td style="font-size:10px;color:var(--text-secondary);">สำรองจ่าย 10%</td><td id="table-reserve-cost">0 บ.</td></tr>
-        </tbody>
-      </table>
-      <div class="summary-total-box">
-        <span>ยอดรวมงบประมาณทั้งสิ้น:</span>
-        <strong id="sum-total">0 บาท</strong>
-      </div>
-      <p class="small-muted">* ค่าเดินทางและที่พักเป็นการประมาณการเพื่อวางแผน โปรดตรวจสอบราคาจริงจากลิงก์ค้นหาก่อนตัดสินใจจองจริง</p>
+    <!-- 1. View: Auth -->
+    <div id="view-auth" class="view active">
+        <div class="auth-card">
+            <i class="fa-solid fa-map-location-dot fa-4x" style="color: var(--primary); margin-bottom: 20px;"></i>
+            <h2>Travel 🧳 companion</h2>
+            <p>ระบบผู้ช่วยคำนวณงบ นำทาง และวางแผนทริปอัจฉริยะ</p>
+            
+            <form id="auth-form" onsubmit="auth.handleSubmit(event)">
+                <input type="text" id="auth-username" placeholder="ชื่อผู้ใช้งาน (Username)" required>
+                <input type="password" id="auth-password" placeholder="รหัสผ่าน (Password)" required>
+                <button type="submit" class="btn-primary" id="auth-btn">เข้าสู่ระบบ</button>
+            </form>
+            
+            <div style="margin-top: 25px;">
+                <span id="auth-switch-text">ยังไม่มีบัญชีใช่ไหม? </span>
+                <span class="toggle-auth" onclick="auth.toggleMode()" id="auth-toggle-btn">สมัครสมาชิก</span>
+            </div>
+        </div>
     </div>
 
-    <button class="btn btn-primary" style="background:var(--success);" onclick="saveTrip()">✨ บันทึกทริปของฉัน</button>
-    <div class="success-banner" id="success-banner">🎉 บันทึกทริปสำเร็จ!</div>
-
-    <h3 class="section-title">📂 ทริปที่บันทึกไว้</h3>
-    <div id="saved-trips-list"><p class="small-muted">ยังไม่มีทริปที่บันทึกไว้</p></div>
-
-    <button class="btn btn-secondary" style="margin-top:auto;" onclick="switchTab(2)">ย้อนกลับ</button>
-  </div>
-</div>
-
-<script>
-/* ---------------- ข้อมูลจังหวัดทั้ง 77 จังหวัด (พิกัดโดยประมาณของตัวเมือง/ศาลากลาง) ---------------- */
-const PROVINCES = [
-["กรุงเทพมหานคร",13.7563,100.5018],["กระบี่",8.0863,98.9063],["กาญจนบุรี",14.0227,99.5328],
-["กาฬสินธุ์",16.4315,103.5060],["กำแพงเพชร",16.4828,99.5225],["ขอนแก่น",16.4419,102.8360],
-["จันทบุรี",12.6113,102.1036],["ฉะเชิงเทรา",13.6904,101.0779],["ชลบุรี",13.3611,100.9847],
-["ชัยนาท",15.1851,100.1251],["ชัยภูมิ",15.8068,102.0317],["ชุมพร",10.4930,99.1800],
-["เชียงราย",19.9105,99.8406],["เชียงใหม่",18.7883,98.9853],["ตรัง",7.5645,99.6240],
-["ตราด",12.2428,102.5178],["ตาก",16.8839,99.1258],["นครนายก",14.2069,101.2130],
-["นครปฐม",13.8199,100.0620],["นครพนม",17.4102,104.7791],["นครราชสีมา",14.9799,102.0977],
-["นครศรีธรรมราช",8.4304,99.9631],["นครสวรรค์",15.7047,100.1372],["นนทบุรี",13.8621,100.5144],
-["นราธิวาส",6.4264,101.8253],["น่าน",18.7756,100.7730],["บึงกาฬ",18.3609,103.6465],
-["บุรีรัมย์",14.9930,103.1029],["ปทุมธานี",14.0208,100.5250],["ประจวบคีรีขันธ์",11.8126,99.7957],
-["ปราจีนบุรี",14.0511,101.3672],["ปัตตานี",6.8697,101.2500],["พระนครศรีอยุธยา",14.3532,100.5680],
-["พะเยา",19.1664,99.9017],["พังงา",8.4510,98.5310],["พัทลุง",7.6167,100.0833],
-["พิจิตร",16.4420,100.3487],["พิษณุโลก",16.8298,100.2652],["เพชรบุรี",13.1119,99.9412],
-["เพชรบูรณ์",16.4194,101.1591],["แพร่",18.1445,100.1405],["ภูเก็ต",7.8804,98.3923],
-["มหาสารคาม",16.1850,103.3000],["มุกดาหาร",16.5450,104.7233],["แม่ฮ่องสอน",19.3020,97.9654],
-["ยโสธร",15.7920,104.1450],["ยะลา",6.5410,101.2803],["ร้อยเอ็ด",16.0538,103.6520],
-["ระนอง",9.9528,98.6084],["ระยอง",12.6814,101.2816],["ราชบุรี",13.5282,99.8134],
-["ลพบุรี",14.7995,100.6534],["ลำปาง",18.2888,99.4900],["ลำพูน",18.5745,99.0087],
-["เลย",17.4860,101.7223],["ศรีสะเกษ",15.1186,104.3220],["สกลนคร",17.1545,104.1478],
-["สงขลา",7.1898,100.5951],["สตูล",6.6238,100.0674],["สมุทรปราการ",13.5990,100.5998],
-["สมุทรสงคราม",13.4098,100.0022],["สมุทรสาคร",13.5475,100.2745],["สระแก้ว",13.8140,102.0645],
-["สระบุรี",14.5289,100.9101],["สิงห์บุรี",14.8907,100.3968],["สุโขทัย",17.0068,99.8265],
-["สุพรรณบุรี",14.4744,100.1177],["สุราษฎร์ธานี",9.1382,99.3215],["สุรินทร์",14.8828,103.4936],
-["หนองคาย",17.8783,102.7414],["หนองบัวลำภู",17.2044,102.4260],["อ่างทอง",14.5896,100.4549],
-["อำนาจเจริญ",15.8656,104.6259],["อุดรธานี",17.4139,102.7873],["อุตรดิตถ์",17.6200,100.0993],
-["อุทัยธานี",15.3835,100.0248],["อุบลราชธานี",15.2286,104.8564]
-];
-
-/* จังหวัดที่มีสนามบินพาณิชย์ */
-const AIRPORT_PROVINCES = new Set(["กรุงเทพมหานคร","เชียงใหม่","เชียงราย","แม่ฮ่องสอน","น่าน","ลำปาง",
-"พิษณุโลก","สุโขทัย","ตาก","อุดรธานี","ขอนแก่น","เลย","สกลนคร","นครพนม","อุบลราชธานี","ร้อยเอ็ด",
-"บุรีรัมย์","นครราชสีมา","สุรินทร์","ชุมพร","ระนอง","สุราษฎร์ธานี","นครศรีธรรมราช","ตรัง","กระบี่",
-"ภูเก็ต","สงขลา","นราธิวาส","ตราด"]);
-
-/* จังหวัด/พื้นที่ที่มีการเดินทางโดยเรือ */
-const BOAT_PROVINCES = new Set(["ภูเก็ต","กระบี่","สุราษฎร์ธานี","ชุมพร","ตราด","ระนอง","สตูล","พังงา","ชลบุรี","ระยอง"]);
-
-/* ---------------- ปลายทางยอดฮิต ---------------- */
-const POPULAR_DESTINATIONS = [
-  { id:"chiangmai", name:"เชียงใหม่ (เมืองเก่า-ดอยสุเทพ)", province:"เชียงใหม่",
-    img:"https://images.unsplash.com/photo-1599940824399-b87987ceb72a",
-    desc:"เมืองเก่าล้อมคูเมือง วัดเก่าแก่ อากาศเย็นสบาย คาเฟ่และถนนคนเดินชื่อดัง",
-    areas:["เมืองเก่า/ประตูท่าแพ","นิมมานเหมินทร์"], food:["ข้าวซอย","ไส้อั่ว","น้ำพริกอ่อง","แคปหมู"] },
-  { id:"chiangrai", name:"เชียงราย (วัดร่องขุ่น-ดอยแม่สลอง)", province:"เชียงราย",
-    img:"https://images.unsplash.com/photo-1598935888738-cd2622bdb298",
-    desc:"วัดขาวร่องขุ่น ไร่ชาดอยแม่สลอง และบรรยากาศชายแดนเหนือสุดของไทย",
-    areas:["ตัวเมืองเชียงราย","ดอยแม่สลอง"], food:["ข้าวซอย","ชาอู่หลง","ลาบคั่ว"] },
-  { id:"bangsaen", name:"บางแสน, ชลบุรี", province:"ชลบุรี",
-    img:"https://images.unsplash.com/photo-1566073771259-6a8506099945",
-    desc:"หาดใกล้กรุงเทพฯ เหมาะทริปสั้นๆ คาเฟ่ริมทะเลและของทะเลสด",
-    areas:["หาดบางแสน","ตลาดหนองมน"], food:["ของทะเลสด","ทาร์ตไข่บางแสน","หอยทอด"] },
-  { id:"pattaya", name:"พัทยา, ชลบุรี", province:"ชลบุรี",
-    img:"https://images.unsplash.com/photo-1552465011-b4e21bf6e79a",
-    desc:"เมืองท่องเที่ยวริมทะเลชื่อดัง กิจกรรมหลากหลาย เดินทางสะดวก",
-    areas:["หาดพัทยา","หาดจอมเทียน"], food:["ของทะเล","ก๋วยเตี๋ยวเรือ"] },
-  { id:"phuket", name:"ภูเก็ต (ป่าตอง-เมืองเก่าภูเก็ต)", province:"ภูเก็ต",
-    img:"https://images.unsplash.com/photo-1589394815804-964ed0be2eb5",
-    desc:"เกาะใหญ่ที่สุดของไทย ตึกชิโนโปรตุกีส หาดทรายขาว และอาหารใต้",
-    areas:["ป่าตอง","เมืองเก่าภูเก็ต"], food:["หมี่หุ้น","โอต๊าว","ข้าวยำภูเก็ต"] },
-  { id:"kohsamui", name:"เกาะสมุย, สุราษฎร์ธานี", province:"สุราษฎร์ธานี",
-    img:"https://images.unsplash.com/photo-1552465011-b4e21bf6e79a",
-    desc:"เกาะพักผ่อนชื่อดังฝั่งอ่าวไทย เดินทางโดยเครื่องบินหรือเรือเฟอร์รี่",
-    areas:["หาดเฉวง","หาดละไม"], food:["ข้าวยำ","แกงไตปลา","ของทะเล"] },
-  { id:"krabi", name:"กระบี่ (อ่าวนาง-ไร่เลย์)", province:"กระบี่",
-    img:"https://images.unsplash.com/photo-1552465011-b4e21bf6e79a",
-    desc:"หน้าผาหินปูน ทะเลใส และเกาะสวยหลายแห่งให้เที่ยวต่อทางเรือ",
-    areas:["อ่าวนาง","ไร่เลย์"], food:["ข้าวยำ","แกงไตปลา"] },
-  { id:"khaoyai", name:"เขาใหญ่, นครราชสีมา", province:"นครราชสีมา",
-    img:"https://images.unsplash.com/photo-1513836279014-a89f7a76ae86",
-    desc:"อุทยานแห่งชาติมรดกโลก อากาศเย็น ฟาร์มโชว์และไร่องุ่นรอบเขาใหญ่",
-    areas:["ถนนธนะรัชต์","ตัวอำเภอปากช่อง"], food:["อาหารอีสาน","ส้มตำ","ไก่ย่าง"] },
-  { id:"huahin", name:"หัวหิน, ประจวบคีรีขันธ์", province:"ประจวบคีรีขันธ์",
-    img:"https://images.unsplash.com/photo-1552465011-b4e21bf6e79a",
-    desc:"เมืองตากอากาศคลาสสิก หาดทรายกว้าง ตลาดโต้รุ่งและคาเฟ่เก๋ๆ",
-    areas:["หาดหัวหิน","ตลาดฉัตรไชย"], food:["ของทะเล","ปลาหมึกย่าง"] },
-  { id:"ayutthaya", name:"พระนครศรีอยุธยา", province:"พระนครศรีอยุธยา",
-    img:"https://images.unsplash.com/photo-1596422846543-75c6fc197f07",
-    desc:"อดีตราชธานี วัดโบราณและโบราณสถานมรดกโลก เดินทางใกล้กรุงเทพฯ",
-    areas:["เกาะเมืองอยุธยา"], food:["ก๋วยเตี๋ยวเรืออยุธยา","โรตีสายไหม"] },
-  { id:"sukhothai", name:"สุโขทัย (อุทยานประวัติศาสตร์)", province:"สุโขทัย",
-    img:"https://images.unsplash.com/photo-1552550049-db097c9480d1",
-    desc:"อุทยานประวัติศาสตร์สุโขทัย ต้นกำเนิดอาณาจักรไทย บรรยากาศสงบ",
-    areas:["เมืองเก่าสุโขทัย"], food:["ก๋วยเตี๋ยวสุโขทัย"] },
-  { id:"kanchanaburi", name:"กาญจนบุรี (สะพานข้ามแม่น้ำแคว)", province:"กาญจนบุรี",
-    img:"https://images.unsplash.com/photo-1552465011-b4e21bf6e79a",
-    desc:"ประวัติศาสตร์สงครามโลก น้ำตกและแพริมแม่น้ำแคว ธรรมชาติเขียวขจี",
-    areas:["สะพานข้ามแม่น้ำแคว","อำเภอไทรโยค"], food:["ปลาแม่น้ำ","ผัดไทยกาญจน์"] }
-];
-
-const STOCK_HOTEL_IMGS = {
-  boutique:"https://images.unsplash.com/photo-1566073771259-6a8506099945",
-  pool:"https://images.unsplash.com/photo-1571896349842-33c89424de2d",
-  room:"https://images.unsplash.com/photo-1611892440504-42a792e24d32",
-  resort:"https://images.unsplash.com/photo-1520250497591-112f2f40a3f4",
-  river:"https://images.unsplash.com/photo-1544644181-1484b3fdfc62",
-  beach:"https://images.unsplash.com/photo-1582719508461-905c673771fd"
-};
-
-const HOTEL_RECOMMENDATIONS = {
-  chiangmai: [
-    {name:"Tamarind Village",area:"ในกำแพงเมืองเก่า",tier:"luxury",price:[3500,5500],img:STOCK_HOTEL_IMGS.boutique, blurb:"อยู่ในกำแพงเมืองเก่า เดินเที่ยววัดและถนนคนเดินท่าแพได้สบาย มีสวนร่มรื่นกลางเมือง"},
-    {name:"U Nimman Chiang Mai",area:"นิมมานเหมินทร์",tier:"mid",price:[2500,4000],img:STOCK_HOTEL_IMGS.room, blurb:"อยู่ใจกลางนิมมาน ใกล้ห้าง MAYA และคาเฟ่ฮิปหลายร้าน เดินถึงได้เกือบทุกที่"},
-    {name:"ibis Styles Chiang Mai",area:"ใกล้สนามบิน/เมืองเก่า",tier:"budget",price:[900,1400],img:STOCK_HOTEL_IMGS.resort, blurb:"ราคาประหยัด ใกล้สนามบินและเมืองเก่า เหมาะสายประหยัดที่เดินทางบ่อย"}
-  ],
-  chiangrai: [
-    {name:"Le Meridien Chiang Rai Resort",area:"ริมแม่น้ำกก",tier:"luxury",price:[4000,6000],img:STOCK_HOTEL_IMGS.resort, blurb:"ริมแม่น้ำกก วิวภูเขาสวย เหมาะพักผ่อนแบบรีสอร์ทหรู"},
-    {name:"Wiang Inn Hotel",area:"ใจกลางเมือง",tier:"mid",price:[1200,1800],img:STOCK_HOTEL_IMGS.room, blurb:"อยู่กลางเมือง เดินไปตลาดไนท์บาซาร์และร้านอาหารได้สะดวก"}
-  ],
-  bangsaen: [
-    {name:"Bangsaen Heritage Hotel",area:"ใกล้หาด/ตลาดหนองมน",tier:"mid",price:[1200,2000],img:STOCK_HOTEL_IMGS.room, blurb:"ใกล้หาดและตลาดหนองมน เดินทางสะดวก"},
-    {name:"ibis Styles Bangsaen",area:"ถนนเลียบชายหาด",tier:"budget",price:[1000,1600],img:STOCK_HOTEL_IMGS.resort, blurb:"ราคาคุ้มค่า ใกล้ถนนเลียบชายหาดบางแสน"}
-  ],
-  pattaya: [
-    {name:"Hilton Pattaya",area:"หาดพัทยา/ต่อเซ็นทรัล",tier:"luxury",price:[3500,5500],img:STOCK_HOTEL_IMGS.pool, blurb:"อยู่กลางหาดพัทยา ต่อกับห้างเซ็นทรัล เดินทางสะดวกมาก"},
-    {name:"A-One The Royal Cruise Hotel",area:"หาดจอมเทียน",tier:"mid",price:[1500,2500],img:STOCK_HOTEL_IMGS.room, blurb:"ใกล้หาดจอมเทียน วิวทะเลสวย บรรยากาศเงียบกว่าตัวเมือง"}
-  ],
-  phuket: [
-    {name:"The Memory at On On Hotel",area:"เมืองเก่าภูเก็ต",tier:"budget",price:[600,1000],img:STOCK_HOTEL_IMGS.boutique, blurb:"โรงแรมเก่าแก่กลางเมืองเก่า เดินเที่ยวตึกชิโนโปรตุกีสได้เลย"},
-    {name:"Angsana Laguna Phuket",area:"หาดบางเทา",tier:"luxury",price:[4500,7000],img:STOCK_HOTEL_IMGS.beach, blurb:"ติดหาดบางเทาลากูน่า เหมาะพักผ่อนแบบรีสอร์ทหรู"}
-  ],
-  kohsamui: [
-    {name:"Chaweng Garden Beach Resort",area:"หาดเฉวง",tier:"mid",price:[1800,2800],img:STOCK_HOTEL_IMGS.pool, blurb:"อยู่ในหาดเฉวง ใกล้ร้านอาหารและไนท์ไลฟ์"},
-    {name:"Anantara Bophut Koh Samui",area:"บ่อผุด",tier:"luxury",price:[5000,8000],img:STOCK_HOTEL_IMGS.river, blurb:"สไตล์รีสอร์ทหรูริมหาดบ่อผุด บรรยากาศเป็นส่วนตัว"}
-  ],
-  krabi: [
-    {name:"Aonang Villa Resort",area:"อ่าวนาง",tier:"mid",price:[1800,2800],img:STOCK_HOTEL_IMGS.pool, blurb:"อยู่ในอ่าวนาง เดินถึงชายหาดและร้านอาหารได้"},
-    {name:"Rayavadee",area:"ไร่เลย์",tier:"luxury",price:[15000,25000],img:STOCK_HOTEL_IMGS.room, blurb:"รีสอร์ทหรูระดับพรีเมียมกลางไร่เลย์ ล้อมรอบด้วยหน้าผาและทะเล"}
-  ],
-  khaoyai: [
-    {name:"Kirimaya Golf Resort Spa",area:"ปากช่อง",tier:"luxury",price:[4000,7000],img:STOCK_HOTEL_IMGS.resort, blurb:"มีสนามกอล์ฟและวิลล่าส่วนตัว เหมาะพักผ่อนธรรมชาติแบบหรู"},
-    {name:"ibis Styles Khao Yai",area:"ถนนธนะรัชต์",tier:"budget",price:[1200,1800],img:STOCK_HOTEL_IMGS.boutique, blurb:"ราคาประหยัด อยู่ใกล้ถนนธนะรัชต์ เดินทางสะดวก"}
-  ],
-  huahin: [
-    {name:"Centara Grand Beach Resort",area:"หาดหัวหิน",tier:"luxury",price:[5000,8000],img:STOCK_HOTEL_IMGS.beach, blurb:"ริมหาดหัวหิน สถาปัตยกรรมโคโลเนียลคลาสสิก"},
-    {name:"ibis Hua Hin",area:"ใกล้สถานีรถไฟ",tier:"budget",price:[1200,1800],img:STOCK_HOTEL_IMGS.boutique, blurb:"ใกล้ตลาดโต้รุ่งและสถานีรถไฟหัวหิน เดินทางสะดวก"}
-  ],
-  ayutthaya: [
-    {name:"Sala Ayutthaya",area:"ริมแม่น้ำเจ้าพระยา",tier:"mid",price:[2500,4000],img:STOCK_HOTEL_IMGS.river, blurb:"ริมแม่น้ำเจ้าพระยา มองเห็นวัดไชยวัฒนารามจากโรงแรม"},
-    {name:"Kantary Hotel Ayutthaya",area:"ใกล้เกาะเมือง",tier:"mid",price:[1500,2500],img:STOCK_HOTEL_IMGS.pool, blurb:"ใกล้เกาะเมือง เดินทางสะดวกไปวัดต่างๆ"}
-  ],
-  sukhothai: [
-    {name:"Legendha Sukhothai Resort",area:"ใกล้อุทยานประวัติศาสตร์",tier:"mid",price:[1500,2500],img:STOCK_HOTEL_IMGS.resort, blurb:"สไตล์ล้านนา ใกล้อุทยานประวัติศาสตร์เมืองเก่า"},
-    {name:"Ruean Thai Hotel",area:"ตัวเมืองสุโขทัย",tier:"budget",price:[800,1400],img:STOCK_HOTEL_IMGS.boutique, blurb:"เรือนไทยโบราณ บรรยากาศอบอุ่น ราคาย่อมเยา"}
-  ],
-  kanchanaburi: [
-    {name:"U Inchantree Kanchanaburi",area:"ริมแม่น้ำแคว",tier:"mid",price:[1500,2500],img:STOCK_HOTEL_IMGS.boutique, blurb:"ติดแม่น้ำแคว วิวสะพานรถไฟสายมรณะ"},
-    {name:"Good Times Resort",area:"ริมแม่น้ำแคว",tier:"budget",price:[900,1500],img:STOCK_HOTEL_IMGS.resort, blurb:"ราคาประหยัด บรรยากาศริมน้ำ เงียบสงบ"}
-  ]
-};
-
-const TIER_LABEL = {budget:"ประหยัด", mid:"ระดับกลาง", luxury:"ระดับหรู"};
-
-/* ---------------- ข้อมูลร้านอาหารยอดฮิต (Real Data) ---------------- */
-const STOCK_FOOD_IMGS = {
-  noodle: "https://images.unsplash.com/photo-1552611052-33e04de081de",
-  seafood: "https://images.unsplash.com/photo-1615141982883-c7da0e698b0b",
-  cafe: "https://images.unsplash.com/photo-1554118811-1e0d58224f24",
-  local: "https://images.unsplash.com/photo-1564834724105-918b73d1b9e0",
-  finedining: "https://images.unsplash.com/photo-1514933651103-005eec06c04b"
-};
-
-const RESTAURANT_RECOMMENDATIONS = {
-  chiangmai: [
-    {name:"ข้าวซอยแม่สาย", rating:4.5, reviews:4200, type:"อาหารเหนือ / ข้าวซอย", img:STOCK_FOOD_IMGS.noodle, blurb:"ข้าวซอยชื่อดัง น้ำซุปเข้มข้น เนื้อเปื่อยกำลังดี ดีกรีมิชลินไกด์"},
-    {name:"ไก่ย่าง SP", rating:4.4, reviews:2100, type:"อาหารไทย / ไก่ย่าง", img:STOCK_FOOD_IMGS.local, blurb:"ไก่ย่างหมุนเตาถ่านหนังกรอบเนื้อนุ่ม ตำนานคู่เชียงใหม่"},
-    {name:"ต๋องเต็มโต๊ะ (นิมมาน)", rating:4.3, reviews:5400, type:"อาหารเหนือพื้นบ้าน", img:STOCK_FOOD_IMGS.local, blurb:"ร้านอาหารเหนือสุดฮิตกลางนิมมานฯ เมนูหลากหลาย รสชาติจัดจ้าน"},
-    {name:"เฮือนม่วนใจ๋", rating:4.4, reviews:3300, type:"อาหารเหนือต้นตำรับ", img:STOCK_FOOD_IMGS.local, blurb:"อาหารเหนือรสดั้งเดิม ออเดิร์ฟเมืองคือเมนูที่ต้องสั่ง บรรยากาศล้านนาแท้ๆ"}
-  ],
-  chiangrai: [
-    {name:"ชีวิตธรรมดา (Chivit Thamma Da)", rating:4.6, reviews:6500, type:"คาเฟ่ / อาหารนานาชาติ", img:STOCK_FOOD_IMGS.cafe, blurb:"คาเฟ่ริมน้ำกกบรรยากาศร่มรื่นสไตล์อังกฤษ เบเกอรี่อร่อยมาก"},
-    {name:"น้ำเงี้ยวป้าสุข", rating:4.5, reviews:1800, type:"อาหารเหนือ / ขนมจีน", img:STOCK_FOOD_IMGS.noodle, blurb:"น้ำเงี้ยวเจ้าเด็ดสูตรเชียงราย รสชาติเข้มข้น คิวยาวตลอด"},
-    {name:"ร้านอาหารหลู้ลำ", rating:4.3, reviews:3200, type:"อาหารเมืองริมน้ำกก", img:STOCK_FOOD_IMGS.local, blurb:"อาหารพื้นเมืองเชียงรายบรรยากาศดีริมน้ำ เมนูเด็ดเช่น ปลาคังลวกจิ้ม, ลาบคั่ว"},
-    {name:"Ribs & Co", rating:4.7, reviews:1100, type:"สเต็ก / ซี่โครงหมู", img:STOCK_FOOD_IMGS.finedining, blurb:"ซี่โครงหมูบาร์บีคิวเปื่อยยุ่ย ซอสอร่อยมาก ร้านน่านั่งกลางเมือง"}
-  ],
-  bangsaen: [
-    {name:"ร้านอาหารดีพร้อม", rating:4.3, reviews:4100, type:"อาหารทะเล", img:STOCK_FOOD_IMGS.seafood, blurb:"ร้านอาหารทะเลเก่าแก่ รสชาติจัดจ้าน วัตถุดิบสดใหม่ บรรยากาศดี"},
-    {name:"Chariot Bangsaen", rating:4.4, reviews:2500, type:"อาหารทะเล / นานาชาติ", img:STOCK_FOOD_IMGS.finedining, blurb:"ร้านริมทะเลวิวสวยมาก เหมาะกับการดินเนอร์ชมพระอาทิตย์ตก"},
-    {name:"มงคลฟาร์ม", rating:4.2, reviews:3800, type:"อาหารทะเล", img:STOCK_FOOD_IMGS.seafood, blurb:"ร้านดังอ่างศิลา อาหารทะเลสด ราคาจับต้องได้ รสชาติถูกปากคนไทย"},
-    {name:"หม่อมแป้น ซีฟู้ด", rating:4.4, reviews:1500, type:"อาหารทะเล", img:STOCK_FOOD_IMGS.seafood, blurb:"ซีฟู้ดสดๆ น้ำจิ้มรสเด็ด ร้านโปร่งโล่งนั่งสบาย"}
-  ],
-  pattaya: [
-    {name:"มุมอร่อย (พัทยา-นาเกลือ)", rating:4.3, reviews:12000, type:"อาหารทะเล", img:STOCK_FOOD_IMGS.seafood, blurb:"ร้านอาหารทะเลระดับตำนาน วิวทะเลสวย อาหารหลากหลาย จานใหญ่"},
-    {name:"ร้านปูเป็น ซีฟู้ด", rating:4.2, reviews:15000, type:"อาหารทะเล", img:STOCK_FOOD_IMGS.seafood, blurb:"ร้านซีฟู้ดชื่อดังหาดจอมเทียน น้ำจิ้มซีฟู้ดเด็ด กรรเชียงปูเน้นๆ"},
-    {name:"The Glass House Pattaya", rating:4.5, reviews:8000, type:"อาหารนานาชาติ / ซีฟู้ด", img:STOCK_FOOD_IMGS.cafe, blurb:"ร้านสวยริมหาด บรรยากาศโรแมนติกมาก มีทั้งอาหารไทยและฝรั่ง"},
-    {name:"ลุงไสว ซีฟู้ด", rating:4.1, reviews:9000, type:"อาหารทะเล", img:STOCK_FOOD_IMGS.seafood, blurb:"ร้านเก่าแก่สุดหาดจอมเทียน ซีฟู้ดสด รสชาติดั้งเดิมจัดจ้าน"}
-  ],
-  phuket: [
-    {name:"ร้านระย้า (Raya)", rating:4.4, reviews:4800, type:"อาหารพื้นเมืองภูเก็ต", img:STOCK_FOOD_IMGS.local, blurb:"แกงเนื้อปูใบชะพลูที่อร่อยที่สุดในภูเก็ต ร้านอยู่ในตึกเก่าคลาสสิก"},
-    {name:"ตู้กับข้าว (Tu Kab Khao)", rating:4.5, reviews:6500, type:"อาหารใต้พื้นบ้าน", img:STOCK_FOOD_IMGS.local, blurb:"หมูฮ้องรสเด็ด แกงปูรสจัดจ้าน ร้านตกแต่งสวยงามกลางเมืองเก่าภูเก็ต"},
-    {name:"โกเบนซ์ข้าวต้มแห้งภูเก็ต", rating:4.5, reviews:5000, type:"ข้าวต้ม / สตรีทฟู้ด", img:STOCK_FOOD_IMGS.noodle, blurb:"ข้าวต้มแห้งระดับตำนาน เครื่องในทำดีมาก ซุปกลมกล่อม คิวยาวทุกคืน"},
-    {name:"ร้านวันจันทร์ (One Chun)", rating:4.5, reviews:4200, type:"อาหารพื้นเมืองภูเก็ต", img:STOCK_FOOD_IMGS.local, blurb:"อาหารใต้สูตรดั้งเดิม เมนูเด็ดเพียบ ร้านตกแต่งสไตล์วินเทจน่ารัก"}
-  ],
-  kohsamui: [
-    {name:"Coco Tam's", rating:4.5, reviews:8000, type:"บีชบาร์ / นานาชาติ", img:STOCK_FOOD_IMGS.cafe, blurb:"บีชคลับชื่อดัง โชว์ควงกระบองไฟริมหาดสุดอลังการ บรรยากาศชิลมาก"},
-    {name:"เสบียงเล (Sabienglae)", rating:4.3, reviews:4500, type:"อาหารใต้ / อาหารทะเล", img:STOCK_FOOD_IMGS.seafood, blurb:"ร้านอาหารใต้ริมหาด รสชาติจัดจ้าน เมนูเด่นคือยำสาหร่ายข้อและแกงคั่ว"},
-    {name:"ข้าวหอม (Khao Hom)", rating:4.6, reviews:2000, type:"อาหารพื้นบ้านสมุย", img:STOCK_FOOD_IMGS.local, blurb:"อาหารใต้รสดั้งเดิม อร่อยเข้มข้น วัตถุดิบดีเยี่ยม ได้มิชลินบิบกูร์มองด์"},
-    {name:"Supattra Thai Dining", rating:4.9, reviews:1100, type:"อาหารทะเลพรีเมียม", img:STOCK_FOOD_IMGS.finedining, blurb:"ร้านอาหารทะเลไฟน์ไดน์นิ่งขนาดเล็กที่คัดวัตถุดิบสดใหม่ตามฤดูกาล"}
-  ],
-  krabi: [
-    {name:"วังทรายซีฟู้ด", rating:4.1, reviews:6000, type:"อาหารทะเล / อาหารใต้", img:STOCK_FOOD_IMGS.seafood, blurb:"ร้านดังอ่าวนาง วิวพระอาทิตย์ตกสวยมาก ซีฟู้ดสด รสชาติจัดจ้าน"},
-    {name:"แลเลกริลล์ (Lae Lay Grill)", rating:4.4, reviews:2500, type:"อาหารทะเล / ปิ้งย่าง", img:STOCK_FOOD_IMGS.finedining, blurb:"ตั้งอยู่บนเนินเขา วิวอ่าวนางมุมสูงสวยมาก เหมาะสำหรับมื้อเย็นสุดพิเศษ"},
-    {name:"ร้านอาหารเรือนไม้", rating:4.5, reviews:2100, type:"อาหารใต้พื้นบ้าน", img:STOCK_FOOD_IMGS.local, blurb:"ร้านในสวนร่มรื่น อาหารใต้แท้ๆ รสชาติถึงเครื่อง ห้ามพลาดน้ำพริกกุ้งเสียบ"},
-    {name:"ขนมจีนโกจ้อย", rating:4.4, reviews:1800, type:"ขนมจีน / ไก่ทอด", img:STOCK_FOOD_IMGS.noodle, blurb:"ขนมจีนเส้นสดพร้อมน้ำยาปูรสเด็ด ทานคู่กับไก่ทอดร้อนๆ อร่อยมาก"}
-  ],
-  khaoyai: [
-    {name:"Midwinter Green", rating:4.4, reviews:12000, type:"นานาชาติ / พิซซ่า", img:STOCK_FOOD_IMGS.finedining, blurb:"ร้านใหญ่สไตล์ปราสาท บรรยากาศดี อาหารตะวันตกเยี่ยม มีดนตรีสด"},
-    {name:"Ribs mannn", rating:4.4, reviews:8000, type:"สเต็ก / รมควัน", img:STOCK_FOOD_IMGS.finedining, blurb:"ราชาแห่งรมควัน เนื้อซี่โครงนุ่มละลาย อาหารอร่อย บรรยากาศอลังการ"},
-    {name:"เป็นลาว (Penlaos)", rating:4.3, reviews:6000, type:"อาหารอีสาน", img:STOCK_FOOD_IMGS.local, blurb:"ส้มตำ ไก่ย่าง อาหารอีสานรสเด็ด แวะทานง่ายก่อนขึ้นอุทยานฯ"},
-    {name:"The Chocolate Factory", rating:4.4, reviews:7500, type:"นานาชาติ / ของหวาน", img:STOCK_FOOD_IMGS.cafe, blurb:"อาหารอิตาเลียน พิซซ่าอบฟืน และช็อกโกแลตโฮมเมดพรีเมียม"}
-  ],
-  huahin: [
-    {name:"เจ๊กเปี๊ยะ (Jek Piek)", rating:4.2, reviews:3500, type:"อาหารไทย / ตามสั่ง", img:STOCK_FOOD_IMGS.local, blurb:"ร้านเก่าแก่คิวแน่น มีทั้งสุกี้ อาหารตามสั่ง และหมูสะเต๊ะรสเด็ด"},
-    {name:"ชาวเล ซีฟู้ด (Chao Lay)", rating:4.1, reviews:4200, type:"อาหารทะเล", img:STOCK_FOOD_IMGS.seafood, blurb:"ร้านอาหารทะเลริมทะเลหัวหิน วิวสวย อาหารสด น้ำจิ้มซีฟู้ดแซ่บ"},
-    {name:"ร้านอาหารโกทิ (Ko Seafood)", rating:4.2, reviews:2200, type:"อาหารทะเล / ตามสั่ง", img:STOCK_FOOD_IMGS.local, blurb:"ร้านเก่าแก่หน้าตลาดโต้รุ่ง รสชาติสไตล์จีน-ไทย กลมกล่อม ราคามาตรฐาน"},
-    {name:"Supatra by the Sea", rating:4.4, reviews:1800, type:"อาหารทะเล / นานาชาติ", img:STOCK_FOOD_IMGS.finedining, blurb:"ร้านสวยริมหาดเขาตะเกียบ บรรยากาศเงียบสงบ เหมาะกับครอบครัว"}
-  ],
-  ayutthaya: [
-    {name:"ก๋วยเตี๋ยวเรือป้าเล็ก", rating:4.3, reviews:2500, type:"ก๋วยเตี๋ยวเรือ", img:STOCK_FOOD_IMGS.noodle, blurb:"ก๋วยเตี๋ยวเรืออยุธยารสชาติเข้มข้น ชามเล็กๆ สั่งทานเพลิน คิวยาวตลอด"},
-    {name:"เรือนไทยกุ้งเผา (วัดเชิงเลน)", rating:4.4, reviews:4000, type:"กุ้งเผา / อาหารไทย", img:STOCK_FOOD_IMGS.seafood, blurb:"กุ้งแม่น้ำเผาตัวโต มันเยิ้ม น้ำจิ้มรสเด็ด ร้านอยู่ริมแม่น้ำบรรยากาศดี"},
-    {name:"Grand Chaopraya", rating:4.5, reviews:2800, type:"อาหารไทยริมน้ำ / กุ้งเผา", img:STOCK_FOOD_IMGS.finedining, blurb:"ร้านริมแม่น้ำวิวสวย อาหารไทยปราณีต กุ้งเผาสดเนื้อแน่น"},
-    {name:"โรตีสายไหม อาบีดีน", rating:4.6, reviews:1900, type:"ของหวาน / ของฝาก", img:STOCK_FOOD_IMGS.local, blurb:"ตำนานโรตีสายไหม แป้งหอมนุ่ม สายไหมทำสดใหม่ตลอดวัน"}
-  ],
-  sukhothai: [
-    {name:"ก๋วยเตี๋ยวสุโขทัยตาปุ้ย", rating:4.2, reviews:1500, type:"ก๋วยเตี๋ยว / อาหารเหนือ", img:STOCK_FOOD_IMGS.noodle, blurb:"ร้านเก่าแก่ดั้งเดิม ก๋วยเตี๋ยวสุโขทัยเครื่องแน่น หมูแดงอร่อยมาก"},
-    {name:"ไม้กลางกรุง", rating:4.4, reviews:900, type:"อาหารไทย / ก๋วยเตี๋ยว", img:STOCK_FOOD_IMGS.local, blurb:"ร้านตกแต่งสไตล์ล้านนา มีทั้งก๋วยเตี๋ยวสุโขทัย ข้าวเกรียบปากหม้อรสเด็ด"},
-    {name:"เจ๊แฮ", rating:4.1, reviews:1200, type:"ก๋วยเตี๋ยวสุโขทัย", img:STOCK_FOOD_IMGS.noodle, blurb:"อีกหนึ่งร้านดัง ก๋วยเตี๋ยวต้มยำสุโขทัยรสชาติจัดจ้าน ถูกปากคนชอบรสจัด"}
-  ],
-  kanchanaburi: [
-    {name:"คีรีธารา (Keeree Tara)", rating:4.4, reviews:7000, type:"อาหารไทย / ริมแม่น้ำ", img:STOCK_FOOD_IMGS.finedining, blurb:"ร้านดังริมแม่น้ำแควใหญ่วิวสะพาน อาหารไทยรสดี บรรยากาศโรแมนติก"},
-    {name:"ครัวชุกโดน", rating:4.2, reviews:5000, type:"อาหารไทย / อาหารป่า", img:STOCK_FOOD_IMGS.local, blurb:"ร้านริมแม่น้ำบรรยากาศชิล อาหารรสจัดจ้าน ราคาไม่แพง เมนูเด็ดปลาคัง"},
-    {name:"แพหน้าเมือง (แพน้อย)", rating:4.3, reviews:1500, type:"อาหารไทยริมน้ำ", img:STOCK_FOOD_IMGS.local, blurb:"แพอาหารริมน้ำชิลๆ เมนูปลาแม่น้ำสด รสชาติจัดจ้านถึงเครื่อง"},
-    {name:"Loft Restaurant & Bar", rating:4.5, reviews:1200, type:"นานาชาติ / ฟิวชั่น", img:STOCK_FOOD_IMGS.cafe, blurb:"ร้านตกแต่งสวยงามสไตล์ลอฟท์ อาหารฟิวชั่นอร่อย มีเครื่องดื่มให้เลือกเยอะ"}
-  ]
-};
-
-
-/* ---------------- ตัวแปรสถานะ ---------------- */
-let state = { originLat:null, originLng:null, originName:"", destLat:null, destLng:null, destName:"",
-  destKind:"popular", popularData:null, totalDays:3, selectedMode:"car" };
-
-/* ---------------- ฟังก์ชันพื้นฐาน ---------------- */
-function haversine(lat1,lon1,lat2,lon2){
-  const R=6371, toRad=d=>d*Math.PI/180;
-  const dLat=toRad(lat2-lat1), dLon=toRad(lon2-lon1);
-  const a=Math.sin(dLat/2)**2 + Math.cos(toRad(lat1))*Math.cos(toRad(lat2))*Math.sin(dLon/2)**2;
-  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
-}
-function fillProvinceSelect(sel){
-  sel.innerHTML = PROVINCES.map(p=>`<option value="${p[0]}" data-lat="${p[1]}" data-lng="${p[2]}">${p[0]}</option>`).join("");
-}
-function fillPopularSelect(sel){
-  sel.innerHTML = POPULAR_DESTINATIONS.map(d=>`<option value="${d.id}">${d.name}</option>`).join("");
-}
-document.addEventListener("DOMContentLoaded", ()=>{
-  fillProvinceSelect(document.getElementById("origin-province"));
-  fillProvinceSelect(document.getElementById("destination-province-custom"));
-  fillPopularSelect(document.getElementById("destination-popular"));
-  document.getElementById("origin-province").value = "กรุงเทพมหานคร";
-});
-
-function useMyLocation(){
-  const status = document.getElementById("geo-status");
-  if(!navigator.geolocation){ status.textContent = "อุปกรณ์นี้ไม่รองรับการระบุตำแหน่ง"; return; }
-  status.textContent = "กำลังค้นหาตำแหน่งของคุณ...";
-  navigator.geolocation.getCurrentPosition(pos=>{
-    const {latitude,longitude} = pos.coords;
-    let nearest=null, minD=Infinity;
-    PROVINCES.forEach(p=>{
-      const d = haversine(latitude,longitude,p[1],p[2]);
-      if(d<minD){ minD=d; nearest=p; }
-    });
-    if(nearest){
-      document.getElementById("origin-province").value = nearest[0];
-      status.textContent = `ตรวจพบตำแหน่งใกล้เคียงจังหวัด "${nearest[0]}" (ห่างจากศูนย์กลางจังหวัดประมาณ ${minD.toFixed(0)} กม.)`;
-    }
-  }, err=>{
-    status.textContent = "ไม่สามารถเข้าถึงตำแหน่งได้ กรุณาเลือกจังหวัดด้วยตนเอง (" + err.message + ")";
-  });
-}
-
-function setDestMode(mode){
-  state.destKind = mode;
-  document.getElementById("opt-popular").classList.toggle("active", mode==="popular");
-  document.getElementById("opt-custom").classList.toggle("active", mode==="custom");
-  document.getElementById("popular-dest-box").style.display = mode==="popular" ? "block":"none";
-  document.getElementById("custom-dest-box").style.display = mode==="custom" ? "block":"none";
-}
-
-function toggleCustomDays(){
-  const v = document.getElementById("trip-days-select").value;
-  document.getElementById("trip-days-custom").style.display = v==="custom" ? "block":"none";
-}
-
-function getOriginCoords(){
-  const sel = document.getElementById("origin-province");
-  const opt = sel.options[sel.selectedIndex];
-  return { name:sel.value, lat:parseFloat(opt.dataset.lat), lng:parseFloat(opt.dataset.lng) };
-}
-
-/* ---------------- ขั้นตอนที่ 1 -> 2 ---------------- */
-function goToStep2(){
-  const origin = getOriginCoords();
-  state.originName = origin.name; state.originLat = origin.lat; state.originLng = origin.lng;
-
-  const daysSel = document.getElementById("trip-days-select").value;
-  state.totalDays = daysSel==="custom" ? (parseInt(document.getElementById("trip-days-custom").value)||1) : parseInt(daysSel);
-  if(state.totalDays < 1) state.totalDays = 1;
-
-  if(state.destKind === "popular"){
-    const id = document.getElementById("destination-popular").value;
-    const d = POPULAR_DESTINATIONS.find(x=>x.id===id);
-    const prov = PROVINCES.find(p=>p[0]===d.province);
-    state.popularData = d;
-    state.destName = d.name;
-    state.destLat = prov[1]; state.destLng = prov[2];
-    document.getElementById("place-img").src = d.img;
-    document.getElementById("place-name").textContent = d.name;
-    document.getElementById("place-desc").textContent = d.desc;
-    document.getElementById("hotel-dest-label").textContent = d.name;
-    document.getElementById("recommended-areas").innerHTML = d.areas.map(a=>`<span class="chip">${a}</span>`).join("");
-    renderHotelRecommendations(d.id);
-  } else {
-    const provSel = document.getElementById("destination-province-custom");
-    const opt = provSel.options[provSel.selectedIndex];
-    const placeName = document.getElementById("custom-place-name").value.trim();
-    state.popularData = null;
-    state.destName = placeName ? `${placeName} (${provSel.value})` : provSel.value;
-    state.destLat = parseFloat(opt.dataset.lat); state.destLng = parseFloat(opt.dataset.lng);
-    document.getElementById("place-img").src = "https://images.unsplash.com/photo-1552465011-b4e21bf6e79a";
-    document.getElementById("place-name").textContent = state.destName;
-    document.getElementById("place-desc").textContent = "ปลายทางที่กำหนดเอง — โปรดค้นหาข้อมูลที่พัก/ร้านอาหารจริงผ่านลิงก์ที่ให้ไว้ในแต่ละขั้นตอน";
-    document.getElementById("hotel-dest-label").textContent = state.destName;
-    document.getElementById("recommended-areas").innerHTML = `<span class="chip">${provSel.value}</span>`;
-    renderHotelRecommendations(null);
-  }
-
-  renderModes(getDestProvinceForModes());
-  document.querySelectorAll(".tab-btn")[1].disabled = false;
-  switchTab(1);
-}
-
-function getDestProvinceForModes(){
-  return state.popularData ? state.popularData.province : document.getElementById("destination-province-custom").value;
-}
-
-/* ---------------- โหมดการเดินทาง ---------------- */
-function renderModes(destProvince){
-  const distKm = haversine(state.originLat,state.originLng,state.destLat,state.destLng) * 1.2;
-  const carDuration = distKm/70;
-  const carCost = Math.round(distKm * 4);
-
-  let departAdvice;
-  if(carDuration > 6) departAdvice = "ควรออกเดินทางตั้งแต่ 05:00-06:00 น. เนื่องจากระยะทางไกล";
-  else if(carDuration > 3) departAdvice = "ควรออกเดินทางตั้งแต่ 06:00-07:00 น. เพื่อเลี่ยงรถติด";
-  else departAdvice = "ออกเดินทางช่วง 07:30-08:30 น. ได้ตามสะดวก ระยะทางไม่ไกลมาก";
-
-  const modes = [];
-  modes.push({
-    key:"car", label:"🚗 รถยนต์ส่วนตัว/รถตู้/รถทัวร์",
-    detail:`ระยะทางประมาณ ${distKm.toFixed(0)} กม. • ใช้เวลาประมาณ ${carDuration.toFixed(1)} ชม.<br>ค่าน้ำมัน/ทางด่วน/ค่ารถโดยประมาณ ${carCost.toLocaleString()} บาท (ไป-กลับ)<br>${departAdvice}`,
-    costText:`${carCost.toLocaleString()} บ. (โดยประมาณ)`, cost:carCost, needsManualCost:false
-  });
-
-  if(AIRPORT_PROVINCES.has(destProvince)){
-    modes.push({
-      key:"plane", label:"✈️ เครื่องบิน",
-      detail:`${destProvince} มีสนามบินให้บริการ ราคาตั๋วผันแปรตามช่วงเวลาและสายการบิน กรุณาค้นหาราคาจริงและกรอกค่าตั๋วที่พบด้านล่าง`,
-      costText:"ระบุเอง", cost:0, needsManualCost:true
-    });
-  }
-  if(BOAT_PROVINCES.has(destProvince)){
-    modes.push({
-      key:"boat", label:"⛴️ เรือเฟอร์รี่/เรือข้ามฟาก",
-      detail:`เส้นทางสู่ ${destProvince} มีบริการเรือเฟอร์รี่/เรือข้ามฟากในบางจุดหมาย (เช่น เกาะต่างๆ) ราคาและรอบเรือเปลี่ยนแปลงตามฤดูกาล กรุณาค้นหาราคาจริงและกรอกด้านล่าง`,
-      costText:"ระบุเอง", cost:0, needsManualCost:true
-    });
-  }
-
-  state.modes = modes;
-  state.selectedMode = modes[0].key;
-  state.manualModeCost = 0;
-
-  const list = document.getElementById("mode-list");
-  list.innerHTML = modes.map(m=>`
-    <div class="mode-option ${m.key===state.selectedMode?'selected':''}" id="mode-${m.key}" onclick="selectMode('${m.key}')">
-      <div class="mode-head"><span>${m.label}</span><span>${m.costText}</span></div>
-      <div class="mode-detail">${m.detail}</div>
-      ${m.needsManualCost ? `<input class="input" type="number" min="0" placeholder="ราคาที่พบจริง (บาท/คน ไป-กลับ)" style="margin-top:6px;" oninput="setManualModeCost('${m.key}', this.value)">` : ""}
-    </div>`).join("");
-
-  document.getElementById("mode-note").style.display = "block";
-  document.querySelector("#mode-note p").textContent = "ค่ารถยนต์คำนวณจากระยะทางเส้นตรงปรับเผื่อระยะทางถนนจริง ส่วนเครื่องบิน/เรือ ราคาผันแปรมาก จึงให้กรอกราคาที่ตรวจสอบแล้วเอง เพื่อความถูกต้อง";
-
-  const bookingQuery = encodeURIComponent(state.destName);
-  document.getElementById("btn-search-booking").href = `https://www.booking.com/searchresults.html?ss=${bookingQuery}`;
-  document.getElementById("btn-search-agoda").href = `https://www.agoda.com/search?city=${bookingQuery}`;
-}
-
-function selectMode(key){
-  state.selectedMode = key;
-  document.querySelectorAll(".mode-option").forEach(el=>el.classList.remove("selected"));
-  document.getElementById("mode-"+key).classList.add("selected");
-}
-function setManualModeCost(key,val){
-  if(state.selectedMode===key){ state.manualModeCost = parseFloat(val)||0; }
-  const m = state.modes.find(x=>x.key===key);
-  if(m) m.manualCost = parseFloat(val)||0;
-}
-
-function renderHotelRecommendations(destId){
-  const box = document.getElementById("hotel-recommend-box");
-  const note = document.getElementById("hotel-recommend-note");
-  const list = destId ? HOTEL_RECOMMENDATIONS[destId] : null;
-
-  if(!list){
-    box.innerHTML = `<div class="note-block"><p>ปลายทางนี้ยังไม่มีที่พักแนะนำในระบบ กรุณาใช้ปุ่มค้นหาด้านล่างเพื่อดูที่พักจริงและราคาปัจจุบัน แล้วกรอกข้อมูลที่คุณเลือกเองในช่องด้านล่าง</p></div>`;
-    note.style.display = "none";
-    return;
-  }
-
-  box.innerHTML = list.map((h,idx)=>`
-    <div class="hotel-card" id="hotel-card-${idx}">
-      <img class="hotel-card-img" src="${h.img}" alt="ภาพประกอบที่พัก">
-      <div class="hotel-card-body">
-        <div class="hotel-card-top">
-          <div>
-            <div class="hotel-card-name">${h.name}</div>
-            <div class="hotel-card-area">📍 ${h.area}</div>
-          </div>
-          <span class="hotel-tier tier-${h.tier}">${TIER_LABEL[h.tier]}</span>
+    <!-- 2. View: Dashboard -->
+    <div id="view-dashboard" class="view">
+        <div class="header-title">
+            <h2>เริ่มวางแผนการเดินทาง ✈️</h2>
+            <p style="color: var(--text-light); margin-top: 5px;">เลือกจุดเริ่มต้นและจุดหมายปลายทางของคุณ</p>
         </div>
-        <div class="hotel-card-price">฿${h.price[0].toLocaleString()} - ฿${h.price[1].toLocaleString()} / คืน</div>
-        <div class="hotel-card-blurb">${h.blurb}</div>
-        <div class="hotel-card-actions">
-          <button class="btn btn-primary" onclick="selectRecommendedHotel('${destId}',${idx})">✅ เลือกที่พักนี้</button>
-          <a class="btn btn-outline" href="https://www.booking.com/searchresults.html?ss=${encodeURIComponent(h.name+' '+h.area+' '+(state.popularData?state.popularData.province:''))}" target="_blank">เช็คราคาจริง</a>
+        
+        <div class="selector-card">
+            <label>จุดเริ่มต้น (Origin):</label>
+            <select id="origin-select"><option value="">-- กำลังโหลดข้อมูลจังหวัด --</option></select>
+            
+            <label>จุดหมายปลายทาง (Destination):</label>
+            <select id="dest-select"><option value="">-- กำลังโหลดข้อมูลจังหวัด --</option></select>
+            
+            <button class="btn-primary" onclick="planner.initPlanner()"><i class="fa-solid fa-wand-magic-sparkles"></i> สร้างแผนการเดินทาง</button>
         </div>
-      </div>
-    </div>`).join("");
-  note.style.display = "block";
-}
+    </div>
 
-function selectRecommendedHotel(destId, idx){
-  const h = HOTEL_RECOMMENDATIONS[destId][idx];
-  document.getElementById("hotel-name").value = `${h.name} (${h.area})`;
-  document.getElementById("hotel-price").value = Math.round((h.price[0]+h.price[1])/2);
-  document.querySelectorAll(".hotel-card").forEach(c=>c.classList.remove("selected"));
-  document.getElementById("hotel-card-"+idx).classList.add("selected");
-}
-
-/* ---------------- ขั้นตอนที่ 2 -> 3 (ร้านอาหาร) ---------------- */
-function goToStep3(){
-  updateMapAndFood();
-  renderRestaurants();
-  document.querySelectorAll(".tab-btn")[2].disabled = false;
-  switchTab(2);
-}
-
-function updateMapAndFood(){
-  const hotelName = document.getElementById("hotel-name").value.trim();
-  const mapTarget = hotelName ? `${hotelName}, ${state.destName}` : state.destName;
-  const mapQuery = encodeURIComponent(mapTarget);
-  
-  document.getElementById("current-hotel-display").textContent = hotelName || "(คุณยังไม่ได้ระบุชื่อที่พัก)";
-  document.getElementById("google-map-frame").src = `https://maps.google.com/maps?q=${mapQuery}&t=&z=14&ie=UTF8&iwloc=&output=embed`;
-  
-  // อัปเดตปุ่มค้นหาร้านอาหารให้อิงพิกัดจากที่พักโดยตรง
-  const nearbyQuery = encodeURIComponent(`ร้านอาหารใกล้ ${mapTarget}`);
-  document.getElementById("btn-search-restaurants-nearby").href = `https://www.google.com/maps/search/${nearbyQuery}`;
-}
-
-function renderRestaurants() {
-  const destId = state.popularData ? state.popularData.id : null;
-  const box = document.getElementById("restaurant-recommend-box");
-  const note = document.getElementById("restaurant-recommend-note");
-  const list = destId ? RESTAURANT_RECOMMENDATIONS[destId] : null;
-
-  if(!list) {
-    box.innerHTML = `<div class="note-block"><p>ปลายทางนี้ยังไม่มีรายชื่อร้านอาหารแนะนำในระบบ กรุณาใช้ปุ่ม "ค้นหาร้านอาหารบริเวณที่พัก" ด้านบน เพื่อค้นหาร้านอร่อยใกล้ที่พักของคุณผ่านแผนที่จริงได้เลย</p></div>`;
-    note.style.display = "none";
-    return;
-  }
-
-  const hotelName = document.getElementById("hotel-name").value.trim();
-  const locationContext = hotelName ? hotelName : state.destName;
-
-  box.innerHTML = list.map((r, idx)=>`
-    <div class="restaurant-card" id="rest-card-${idx}">
-      <img class="restaurant-card-img" src="${r.img}" alt="ภาพประกอบร้านอาหาร">
-      <div class="restaurant-card-body">
-        <div class="restaurant-card-top">
-          <div>
-            <div class="restaurant-card-name">${r.name}</div>
-            <div class="restaurant-card-area">🍽️ ${r.type}</div>
-          </div>
-          <span class="rating-badge">⭐ ${r.rating} (${r.reviews.toLocaleString()})</span>
+    <!-- 3. View: Trip Planner -->
+    <div id="view-planner" class="view">
+        <div class="header-title">
+            <h2 id="planner-title">แผนทริป: ...</h2>
+            <p style="color: var(--text-light);" id="planner-subtitle">จุดเริ่มต้น: ...</p>
+            <button class="btn-outline" style="color: var(--primary); border-color: var(--primary); margin-top:15px;" onclick="app.showDashboard()"><i class="fa-solid fa-pen"></i> เปลี่ยนจังหวัด</button>
         </div>
-        <div class="restaurant-card-blurb">${r.blurb}</div>
-        <div class="restaurant-card-actions">
-          <button class="btn btn-primary" onclick="openMapToRestaurant('${r.name}', '${locationContext}')">🗺️ นำทางไปร้านนี้</button>
+
+        <div class="planner-grid">
+            <!-- Left Side: Options -->
+            <div>
+                <!-- Attractions -->
+                <div class="card">
+                    <h3><i class="fa-solid fa-camera-retro"></i> ไฮไลท์สถานที่ท่องเที่ยว</h3>
+                    <div class="options-grid" id="attractions-container"></div>
+                </div>
+
+                <!-- Transport -->
+                <div class="card">
+                    <h3><i class="fa-solid fa-bus"></i> การเดินทาง (ไป-กลับ / 1 ท่าน)</h3>
+                    <div class="options-grid" id="transport-container"></div>
+                </div>
+
+                <!-- Hotels -->
+                <div class="card">
+                    <h3><i class="fa-solid fa-bed"></i> ที่พัก / โรงแรม</h3>
+                    <div class="options-grid" id="hotel-container" style="margin-bottom: 20px;"></div>
+                    
+                    <label class="option-label" style="margin-bottom: 15px;">
+                        <input type="radio" name="hotel" value="custom" onchange="planner.toggleCustomHotel()">
+                        <div class="option-content" style="padding: 10px 15px; flex-direction: row; align-items: center; gap: 10px;">
+                            <i class="fa-solid fa-keyboard" style="color:var(--primary);"></i>
+                            <strong>กำหนดที่พักและราคาเอง</strong>
+                        </div>
+                    </label>
+                    
+                    <div id="custom-hotel-form" style="display: none; background: var(--bg-color); padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                        <input type="text" id="custom-hotel-name" placeholder="ชื่อที่พัก (สำหรับใช้นำทางบนแผนที่)" oninput="planner.calculateBudget()">
+                        <input type="number" id="custom-hotel-price" placeholder="ราคาต่อคืน (บาท)" oninput="planner.calculateBudget()">
+                    </div>
+
+                    <label style="font-weight: 500;">จำนวนคืนที่เข้าพัก:</label>
+                    <input type="number" id="hotel-nights" value="1" min="1" oninput="planner.calculateBudget()">
+                </div>
+
+                <!-- Restaurants -->
+                <div class="card">
+                    <h3><i class="fa-solid fa-utensils"></i> ร้านอาหารยอดฮิต</h3>
+                    <div id="restaurant-container" style="margin-bottom: 20px;"></div>
+                    <label style="font-weight: 500;">งบประมาณค่าอาหารต่อท่าน (ตลอดทริป):</label>
+                    <input type="number" id="food-budget" value="1500" min="0" oninput="planner.calculateBudget()">
+                </div>
+            </div>
+
+            <!-- Right Side: Summary & Map -->
+            <div>
+                <div class="card" style="position: sticky; top: 90px;">
+                    <h3><i class="fa-solid fa-calculator"></i> สรุปงบประมาณ</h3>
+                    <table class="budget-table">
+                        <tr>
+                            <td>ค่าเดินทาง</td>
+                            <td align="right"><span id="sum-transport">0</span> ฿</td>
+                        </tr>
+                        <tr>
+                            <td>ค่าที่พัก (<span id="sum-nights">1</span> คืน)</td>
+                            <td align="right"><span id="sum-hotel">0</span> ฿</td>
+                        </tr>
+                        <tr>
+                            <td>ค่าอาหาร</td>
+                            <td align="right"><span id="sum-food">0</span> ฿</td>
+                        </tr>
+                        <tr>
+                            <td>สำรองฉุกเฉิน (10%)</td>
+                            <td align="right"><span id="sum-emergency">0</span> ฿</td>
+                        </tr>
+                        <tr>
+                            <td class="total-row">รวมทั้งสิ้น</td>
+                            <td class="total-row" align="right"><span id="sum-total">0</span> ฿</td>
+                        </tr>
+                    </table>
+                    
+                    <div style="margin-top: 25px; border-top: 1px solid var(--border); padding-top: 20px;">
+                        <h4 style="margin-bottom: 15px; color: var(--primary-dark);"><i class="fa-solid fa-map-location-dot"></i> ระบบนำทาง (Google Maps)</h4>
+                        <p style="font-size: 0.8rem; color: var(--text-light); margin-bottom: 10px;">*ระบบจะใช้ตำแหน่งปัจจุบันของคุณเป็นจุดเริ่มต้น</p>
+                        
+                        <a href="#" target="_blank" id="map-hotel" class="btn-outline" style="display: block; text-align: center; color: var(--primary); border-color: var(--primary); margin-bottom: 10px; text-decoration: none;">
+                            <i class="fa-solid fa-location-dot"></i> นำทางไปที่พัก
+                        </a>
+                        <a href="#" target="_blank" id="map-attraction" class="btn-outline" style="display: block; text-align: center; color: var(--secondary); border-color: var(--secondary); margin-bottom: 20px; text-decoration: none;">
+                            <i class="fa-solid fa-route"></i> นำทางไปที่เที่ยวหลัก
+                        </a>
+                    </div>
+
+                    <button class="btn-secondary" onclick="planner.saveTrip()"><i class="fa-solid fa-floppy-disk"></i> บันทึกทริปของฉัน</button>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>`).join("");
-    
-  note.style.display = "block";
-}
+    </div>
 
-function openMapToRestaurant(restName, hotelName) {
-  // สร้างเส้นทางจากโรงแรม (ถ้ามี) ไปยังร้านอาหาร
-  const origin = hotelName ? encodeURIComponent(hotelName) : encodeURIComponent(state.originName);
-  const destination = encodeURIComponent(`${restName} ${state.destName}`);
-  window.open(`https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}`, "_blank");
-}
+    <!-- 4. View: History -->
+    <div id="view-history" class="view">
+        <div class="header-title">
+            <h2>ประวัติทริปของฉัน 🎒</h2>
+            <p style="color: var(--text-light); margin-top: 5px;">แผนการเดินทางที่คุณบันทึกไว้ทั้งหมด</p>
+        </div>
+        <div id="history-container" class="history-grid"></div>
+    </div>
 
-function openRestaurantMap(inputId){
-  const name = document.getElementById(inputId).value.trim();
-  if(!name){ alert("กรุณาพิมพ์ชื่อร้านอาหารก่อน"); return; }
-  
-  const hotelName = document.getElementById("hotel-name").value.trim();
-  const origin = hotelName ? encodeURIComponent(hotelName) : encodeURIComponent(state.originName);
-  const destination = encodeURIComponent(`${name} ${state.destName}`);
-  
-  window.open(`https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}`, "_blank");
-}
-
-/* ---------------- ขั้นตอนที่ 3 -> 4 ---------------- */
-function goToStep4(){
-  document.querySelectorAll(".tab-btn")[3].disabled = false;
-  switchTab(3);
-  renderSummary();
-  loadSavedTrips();
-}
-
-function renderSummary(){
-  const nights = Math.max(state.totalDays - 1, 0);
-  const hotelPrice = parseFloat(document.getElementById("hotel-price").value) || 0;
-  const hotelName = document.getElementById("hotel-name").value.trim() || "(ยังไม่ระบุชื่อที่พัก)";
-  const hotelTotal = hotelPrice * nights;
-
-  const modeObj = state.modes.find(m=>m.key===state.selectedMode);
-  const transCost = modeObj.needsManualCost ? (modeObj.manualCost||0) : modeObj.cost;
-  const transText = modeObj.label + (modeObj.needsManualCost ? " (ราคาที่ระบุเอง)" : " (ประมาณการจากระยะทาง)");
-
-  const foodPerDay = parseFloat(document.getElementById("food-per-day").value) || 0;
-  const foodTotal = foodPerDay * state.totalDays;
-
-  const activityTotal = parseFloat(document.getElementById("activity-budget").value) || 0;
-
-  const subtotal = transCost + hotelTotal + foodTotal + activityTotal;
-  const reserve = Math.round(subtotal * 0.1);
-  const grandTotal = subtotal + reserve;
-
-  document.getElementById("sum-route").textContent = `${state.originName} ➔ ${state.destName} (${state.totalDays} วัน ${nights} คืน)`;
-  document.getElementById("table-trans-text").textContent = transText;
-  document.getElementById("table-trans-cost").textContent = `${transCost.toLocaleString()} บ.`;
-  document.getElementById("table-hotel-text").textContent = `${hotelName} × ${nights} คืน`;
-  document.getElementById("table-hotel-cost").textContent = `${hotelTotal.toLocaleString()} บ.`;
-  document.getElementById("table-food-text").textContent = `${foodPerDay.toLocaleString()} บ./วัน × ${state.totalDays} วัน`;
-  document.getElementById("table-food-cost").textContent = `${foodTotal.toLocaleString()} บ.`;
-  document.getElementById("table-activity-cost").textContent = `${activityTotal.toLocaleString()} บ.`;
-  document.getElementById("table-reserve-cost").textContent = `${reserve.toLocaleString()} บ.`;
-  document.getElementById("sum-total").textContent = `${grandTotal.toLocaleString()} บาท`;
-
-  state.lastSummary = { origin:state.originName, dest:state.destName, days:state.totalDays, nights,
-    transCost, transText, hotelName, hotelTotal, foodTotal, activityTotal, reserve, grandTotal };
-}
-
-/* ---------------- แท็บ ---------------- */
-function switchTab(index){
-  document.querySelectorAll(".screen").forEach((s,i)=>s.classList.toggle("active", i===index));
-  document.querySelectorAll(".tab-btn").forEach((t,i)=>t.classList.toggle("active", i===index));
-}
-
-/* ---------------- บันทึกทริป (ใช้ localstorage แทนเพื่อความสเถียรของโค้ด html ธรรมดา) ---------------- */
-function saveTrip(){
-  const banner = document.getElementById("success-banner");
-  const trip = state.lastSummary;
-  if(!trip){ return; }
-  const key = "trip_" + Date.now();
-  try{
-    localStorage.setItem(key, JSON.stringify({ ...trip, savedAt:new Date().toISOString() }));
-    banner.style.display = "block";
-    setTimeout(()=>{ banner.style.display="none"; }, 3000);
-    loadSavedTrips();
-  }catch(e){
-    console.error("บันทึกทริปไม่สำเร็จ:", e);
-    alert("ไม่สามารถบันทึกทริปได้ในขณะนี้ ลองใหม่อีกครั้ง");
-  }
-}
-
-function loadSavedTrips(){
-  const box = document.getElementById("saved-trips-list");
-  try{
-    const keys = Object.keys(localStorage).filter(k=>k.startsWith("trip_")).sort().reverse().slice(0,5);
-    if(keys.length===0){
-      box.innerHTML = `<p class="small-muted">ยังไม่มีทริปที่บันทึกไว้</p>`;
-      return;
-    }
-    const items = [];
-    for(const k of keys){
-      try{
-        const val = localStorage.getItem(k);
-        if(val){
-          const t = JSON.parse(val);
-          items.push(`<div class="saved-trip"><span>${t.origin} ➔ ${t.dest} (${t.days} วัน)</span><strong>${t.grandTotal.toLocaleString()} บ.</strong></div>`);
+    <script>
+        // === Core: Utilities ===
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3500);
         }
-      }catch(e){ /* ข้ามรายการที่อ่านไม่ได้ */ }
-    }
-    box.innerHTML = items.length ? items.join("") : `<p class="small-muted">ยังไม่มีทริปที่บันทึกไว้</p>`;
-  }catch(e){
-    box.innerHTML = `<p class="small-muted">ไม่สามารถโหลดทริปที่บันทึกไว้ได้ในขณะนี้</p>`;
-  }
-}
-</script>
+
+        // === Core: 77 Provinces Data ===
+        const provinces = [
+            "กระบี่", "กรุงเทพมหานคร", "กาญจนบุรี", "กาฬสินธุ์", "กำแพงเพชร", "ขอนแก่น", "จันทบุรี", "ฉะเชิงเทรา", 
+            "ชลบุรี", "ชัยนาท", "ชัยภูมิ", "ชุมพร", "เชียงราย", "เชียงใหม่", "ตรัง", "ตราด", "ตาก", "นครนายก", 
+            "นครปฐม", "นครพนม", "นครราชสีมา", "นครศรีธรรมราช", "นครสวรรค์", "นนทบุรี", "นราธิวาส", "น่าน", "บึงกาฬ", 
+            "บุรีรัมย์", "ปทุมธานี", "ประจวบคีรีขันธ์", "ปราจีนบุรี", "ปัตตานี", "พระนครศรีอยุธยา", "พะเยา", "พังงา", 
+            "พัทลุง", "พิจิตร", "พิษณุโลก", "เพชรบุรี", "เพชรบูรณ์", "แพร่", "ภูเก็ต", "มหาสารคาม", "มุกดาหาร", 
+            "แม่ฮ่องสอน", "ยโสธร", "ยะลา", "ร้อยเอ็ด", "ระนอง", "ระยอง", "ราชบุรี", "ลพบุรี", "ลำปาง", "ลำพูน", 
+            "เลย", "ศรีสะเกษ", "สกลนคร", "สงขลา", "สตูล", "สมุทรปราการ", "สมุทรสงคราม", "สมุทรสาคร", "สระแก้ว", 
+            "สระบุรี", "สิงห์บุรี", "สุโขทัย", "สุพรรณบุรี", "สุราษฎร์ธานี", "สุรินทร์", "หนองคาย", "หนองบัวลำภู", 
+            "อ่างทอง", "อำนาจเจริญ", "อุดรธานี", "อุตรดิตถ์", "อุทัยธานี", "อุบลราชธานี"
+        ];
+
+        // === Core: Mock Data (5 Popular Destinations) ===
+        // Note: The logic will fallback to a generic template if a province outside these 5 is selected.
+        const mockDB = {
+            "เชียงใหม่": {
+                attractions: [
+                    { name: "วัดพระธาตุดอยสุเทพ", desc: "สิ่งศักดิ์สิทธิ์คู่เมืองเชียงใหม่ วิวเมืองสวยงาม", img: "https://images.unsplash.com/photo-1598971842777-62b10086386b?auto=format&fit=crop&w=500&q=80" },
+                    { name: "ดอยอินทนนท์", desc: "จุดสูงสุดในสยาม อากาศหนาวเย็นตลอดปี", img: "https://images.unsplash.com/photo-1510525009512-ad7fc13eefab?auto=format&fit=crop&w=500&q=80" }
+                ],
+                transports: [
+                    { type: "เครื่องบิน", price: 2500, details: "บินตรงสู่สนามบินเชียงใหม่ (1 ชม. 15 นาที)", provider: "AirAsia / NokAir / Thai Vietjet" },
+                    { type: "รถไฟ", price: 1600, details: "ตู้นอนปรับอากาศ (ด่วนพิเศษ CNR)", provider: "การรถไฟแห่งประเทศไทย" },
+                    { type: "รถโดยสาร", price: 1400, details: "รถทัวร์ VIP สถานีขนส่งอาเขต", provider: "นครชัยแอร์ / สมบัติทัวร์" },
+                    { type: "รถส่วนตัว", price: 3000, details: "ค่าน้ำมันโดยประมาณ (ไป-กลับ)", provider: "-" }
+                    // Filtered Out: เรือ (ไม่แสดง)
+                ],
+                hotels: [
+                    { name: "U Nimman Chiang Mai", price: 3200, phone: "053-315-000", img: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=500&q=80" },
+                    { name: "The Empress Hotel", price: 1800, phone: "053-253-199", img: "https://images.unsplash.com/photo-1551882547-ff40c0d5e9af?auto=format&fit=crop&w=500&q=80" }
+                ],
+                restaurants: [
+                    { name: "ข้าวซอยเสมอใจ ฟ้าฮ่าม", rating: 4.5, note: "ข้าวซอยต้นตำรับระดับตำนาน" },
+                    { name: "ต๋องเต็มโต๊ะ (นิมมาน)", rating: 4.6, note: "อาหารเหนือพื้นเมืองแท้ๆ" }
+                ]
+            },
+            "ภูเก็ต": {
+                attractions: [
+                    { name: "แหลมพรหมเทพ", desc: "จุดชมพระอาทิตย์ตกที่สวยที่สุด", img: "https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?auto=format&fit=crop&w=500&q=80" },
+                    { name: "ย่านเมืองเก่าภูเก็ต", desc: "สถาปัตยกรรมชิโน-โปรตุกีส", img: "https://images.unsplash.com/photo-1620023242036-3914a87a202a?auto=format&fit=crop&w=500&q=80" }
+                ],
+                transports: [
+                    { type: "เครื่องบิน", price: 3000, details: "บินตรงสู่สนามบินภูเก็ต (1 ชม. 20 นาที)", provider: "Thai Airways / AirAsia" },
+                    { type: "รถโดยสาร", price: 1600, details: "รถทัวร์ VIP สถานีขนส่งภูเก็ต 2", provider: "ภูเก็ตทราเวล" },
+                    { type: "รถส่วนตัว", price: 4000, details: "ค่าน้ำมันโดยประมาณ (ไป-กลับ)", provider: "-" }
+                    // Filtered Out: รถไฟ (ไม่มีสถานี)
+                ],
+                hotels: [
+                    { name: "The Nai Harn Phuket", price: 4500, phone: "076-380-200", img: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=500&q=80" },
+                    { name: "Lub d Phuket Patong", price: 1200, phone: "076-530-100", img: "https://images.unsplash.com/photo-1549294413-26f195200c16?auto=format&fit=crop&w=500&q=80" }
+                ],
+                restaurants: [
+                    { name: "ร้านอาหารระย้า", rating: 4.7, note: "แกงเนื้อปูใบชะพลู มิชลินไกด์" },
+                    { name: "หมอมุตี (Mor Mu Dong)", rating: 4.4, note: "อาหารพื้นบ้านภูเก็ตแท้ๆ" }
+                ]
+            },
+            "ชลบุรี": {
+                attractions: [
+                    { name: "หาดพัทยา & Walking Street", desc: "สีสันยามค่ำคืนและทะเลใกล้กรุง", img: "https://images.unsplash.com/photo-1610488663806-0563467bfaf2?auto=format&fit=crop&w=500&q=80" },
+                    { name: "ปราสาทสัจธรรม", desc: "ปราสาทไม้แกะสลักใหญ่ที่สุดในโลก", img: "https://images.unsplash.com/photo-1601662528567-526cd06f6582?auto=format&fit=crop&w=500&q=80" }
+                ],
+                transports: [
+                    { type: "รถส่วนตัว", price: 600, details: "ค่าน้ำมัน + ทางด่วน (มอเตอร์เวย์)", provider: "-" },
+                    { type: "รถโดยสาร", price: 350, details: "รถตู้/มินิบัส จากเอกมัย ไปพัทยา", provider: "รถรุ่งเรือง (พัทยา)" },
+                    { type: "รถไฟ", price: 100, details: "รถไฟขบวนธรรมดา หัวลำโพง - พัทยา", provider: "การรถไฟแห่งประเทศไทย" }
+                    // Filtered Out: เครื่องบิน
+                ],
+                hotels: [
+                    { name: "Hilton Pattaya", price: 5500, phone: "038-253-000", img: "https://images.unsplash.com/photo-1578683010236-d716f9a3f461?auto=format&fit=crop&w=500&q=80" },
+                    { name: "Holiday Inn Pattaya", price: 2800, phone: "038-725-555", img: "https://images.unsplash.com/photo-1564501049412-61c2a3083791?auto=format&fit=crop&w=500&q=80" }
+                ],
+                restaurants: [
+                    { name: "มุมอร่อย นาเกลือ", rating: 4.4, note: "ซีฟู้ดสดๆ บรรยากาศริมทะเล" },
+                    { name: "ปูเป็น Seafood", rating: 4.3, note: "ร้านดังหาดจอมเทียน" }
+                ]
+            },
+            "สุราษฎร์ธานี": {
+                attractions: [
+                    { name: "เขื่อนเชี่ยวหลาน", desc: "กุ้ยหลินเมืองไทย น้ำสีเขียวมรกต", img: "https://images.unsplash.com/photo-1579737525381-807d47683935?auto=format&fit=crop&w=500&q=80" },
+                    { name: "เกาะสมุย", desc: "สวรรค์อ่าวไทย หาดทรายขาว", img: "https://images.unsplash.com/photo-1537956965359-7573183d1f57?auto=format&fit=crop&w=500&q=80" }
+                ],
+                transports: [
+                    { type: "เครื่องบิน", price: 2800, details: "ลงสนามบินสุราษฎร์ฯ หรือ สมุย", provider: "Bangkok Airways / AirAsia" },
+                    { type: "รถไฟ", price: 1500, details: "ตู้นอนปรับอากาศ ลงสถานีพุนพิน", provider: "การรถไฟแห่งประเทศไทย" },
+                    { type: "รถโดยสาร", price: 1300, details: "สายใต้ใหม่ - สุราษฎร์ฯ", provider: "สมบัติทัวร์" },
+                    { type: "เรือ", price: 1000, details: "เรือเฟอร์รี่ ข้ามเกาะสมุย/พะงัน", provider: "ลมพระยา / ซีทราน" },
+                    { type: "รถส่วนตัว", price: 3500, details: "ค่าน้ำมันขับรถลงใต้", provider: "-" }
+                ],
+                hotels: [
+                    { name: "500 Rai Floating Resort", price: 8000, phone: "077-953-013", img: "https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?auto=format&fit=crop&w=500&q=80" },
+                    { name: "B2 Surat Thani Premier", price: 900, phone: "02-222-1133", img: "https://images.unsplash.com/photo-1551882547-ff40c0d5e9af?auto=format&fit=crop&w=500&q=80" }
+                ],
+                restaurants: [
+                    { name: "ลัคกี้ ภัตตาคาร", rating: 4.3, note: "อาหารเหลาเก่าแก่เมืองสุราษฎร์ฯ" },
+                    { name: "ร้านอาหารภูเขาทอง", rating: 4.2, note: "เด็ดที่แกงส้มปลากะพง" }
+                ]
+            },
+            "พระนครศรีอยุธยา": {
+                attractions: [
+                    { name: "วัดมหาธาตุ", desc: "เศียรพระพุทธรูปในรากไม้ มรดกโลก", img: "https://images.unsplash.com/photo-1577977467664-9169622d9b62?auto=format&fit=crop&w=500&q=80" },
+                    { name: "วัดใหญ่ชัยมงคล", desc: "เจดีย์ชัยมงคลอันโดดเด่น", img: "https://images.unsplash.com/photo-1582239618034-7cc99be3a985?auto=format&fit=crop&w=500&q=80" }
+                ],
+                transports: [
+                    { type: "รถส่วนตัว", price: 300, details: "ค่าน้ำมันขับรถจากกรุงเทพ (1-1.5 ชม.)", provider: "-" },
+                    { type: "รถไฟ", price: 40, details: "รถไฟชานเมือง หัวลำโพง - อยุธยา", provider: "การรถไฟแห่งประเทศไทย" },
+                    { type: "รถโดยสาร", price: 150, details: "รถตู้จากหมอชิต 2", provider: "คิวรถตู้หมอชิต" }
+                    // Filtered Out: เครื่องบิน, เรือ(ข้ามเกาะ)
+                ],
+                hotels: [
+                    { name: "Sala Ayutthaya", price: 4800, phone: "035-242-588", img: "https://images.unsplash.com/photo-1584132967334-10e028bd69f7?auto=format&fit=crop&w=500&q=80" },
+                    { name: "Classic Kameo Ayutthaya", price: 2000, phone: "035-212-535", img: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=500&q=80" }
+                ],
+                restaurants: [
+                    { name: "เรือนไทยกุ้งเผา", rating: 4.6, note: "กุ้งแม่น้ำเผาตัวโต น้ำจิ้มรสเด็ด" },
+                    { name: "ก๋วยเตี๋ยวเรือป้าเล็ก", rating: 4.4, note: "ก๋วยเตี๋ยวเรือสูตรอยุธยาแท้" }
+                ]
+            }
+        };
+
+        // Generic template for provinces not in mockDB
+        const genericData = (provName) => ({
+            attractions: [
+                { name: `จุดชมวิวเมือง${provName}`, desc: "สถานที่ท่องเที่ยวยอดนิยมประจำจังหวัด", img: "https://images.unsplash.com/photo-1500835556837-99ac94a94552?auto=format&fit=crop&w=500&q=80" },
+                { name: `ถนนคนเดิน${provName}`, desc: "แหล่งรวมของกินและวัฒนธรรมท้องถิ่น", img: "https://images.unsplash.com/photo-1533900298318-6b8da08a523e?auto=format&fit=crop&w=500&q=80" }
+            ],
+            transports: [
+                { type: "รถส่วนตัว", price: 1500, details: "ค่าน้ำมันโดยประมาณ", provider: "-" },
+                { type: "รถโดยสาร", price: 800, details: `รถทัวร์ไป บขส. ${provName}`, provider: "บริษัทขนส่ง จำกัด" }
+            ],
+            hotels: [
+                { name: `${provName} Grand Hotel`, price: 1200, phone: "02-XXX-XXXX", img: "https://images.unsplash.com/photo-1551882547-ff40c0d5e9af?auto=format&fit=crop&w=500&q=80" },
+            ],
+            restaurants: [
+                { name: `ร้านอร่อยเมือง${provName}`, rating: 4.2, note: "ร้านอาหารแนะนำประจำจังหวัด" }
+            ]
+        });
+
+        // === State Management ===
+        const app = {
+            currentUser: null,
+            userLocation: "My+Location", // Fallback for Geolocation API
+            
+            init() {
+                this.populateDropdowns();
+                const user = localStorage.getItem('travel_user');
+                if (user) {
+                    this.currentUser = user;
+                    document.getElementById('user-menu').style.display = 'flex';
+                    document.getElementById('user-display-name').textContent = `สวัสดี, ${user}`;
+                    this.showDashboard();
+                } else {
+                    this.showView('view-auth');
+                }
+                this.fetchGeolocation();
+            },
+
+            populateDropdowns() {
+                const selects = ['origin-select', 'dest-select'];
+                const optionsHTML = `<option value="">-- กรุณาเลือกจังหวัด --</option>` + 
+                                    provinces.map(p => `<option value="${p}">${p}</option>`).join('');
+                selects.forEach(id => document.getElementById(id).innerHTML = optionsHTML);
+            },
+
+            fetchGeolocation() {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        (pos) => {
+                            this.userLocation = `${pos.coords.latitude},${pos.coords.longitude}`;
+                            console.log("Geolocation API: Location acquired.");
+                        },
+                        (err) => {
+                            console.warn("Geolocation API: Permission denied/Failed. Using fallback 'My+Location'.");
+                        }
+                    );
+                }
+            },
+
+            showView(viewId) {
+                document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+                document.getElementById(viewId).classList.add('active');
+                window.scrollTo(0,0);
+            },
+
+            showDashboard() {
+                if(!this.currentUser) return;
+                this.showView('view-dashboard');
+            },
+
+            showDashboardIfLogged() {
+                if(this.currentUser) this.showDashboard();
+            },
+
+            showHistory() {
+                if(!this.currentUser) return;
+                historyModule.loadHistory();
+                this.showView('view-history');
+            }
+        };
+
+        // === Authentication ===
+        const auth = {
+            isLoginMode: true,
+
+            toggleMode() {
+                this.isLoginMode = !this.isLoginMode;
+                document.getElementById('auth-btn').textContent = this.isLoginMode ? 'เข้าสู่ระบบ' : 'สมัครสมาชิก';
+                document.getElementById('auth-switch-text').textContent = this.isLoginMode ? 'ยังไม่มีบัญชีใช่ไหม? ' : 'มีบัญชีอยู่แล้ว? ';
+                document.getElementById('auth-toggle-btn').textContent = this.isLoginMode ? 'สมัครสมาชิก' : 'เข้าสู่ระบบเลย';
+            },
+
+            handleSubmit(e) {
+                e.preventDefault();
+                const user = document.getElementById('auth-username').value.trim();
+                const pass = document.getElementById('auth-password').value.trim();
+
+                if (!this.isLoginMode) {
+                    if(localStorage.getItem(`account_${user}`)) {
+                        showToast('ชื่อผู้ใช้งานนี้ถูกใช้ไปแล้ว!');
+                    } else {
+                        localStorage.setItem(`account_${user}`, pass);
+                        showToast('สมัครสมาชิกสำเร็จ! กำลังเข้าสู่ระบบ...');
+                        this.performLogin(user);
+                    }
+                } else {
+                    const savedPass = localStorage.getItem(`account_${user}`);
+                    if(savedPass && savedPass === pass) {
+                        showToast('เข้าสู่ระบบสำเร็จ!');
+                        this.performLogin(user);
+                    } else {
+                        showToast('ชื่อผู้ใช้งานหรือรหัสผ่านไม่ถูกต้อง!');
+                    }
+                }
+            },
+
+            performLogin(user) {
+                localStorage.setItem('travel_user', user);
+                app.init();
+            },
+
+            logout() {
+                localStorage.removeItem('travel_user');
+                app.currentUser = null;
+                document.getElementById('user-menu').style.display = 'none';
+                document.getElementById('auth-username').value = "";
+                document.getElementById('auth-password').value = "";
+                app.showView('view-auth');
+                showToast('ออกจากระบบเรียบร้อยแล้ว');
+            }
+        };
+
+        // === Trip Planner & Budget ===
+        const planner = {
+            origin: "",
+            dest: "",
+            data: null,
+
+            initPlanner() {
+                this.origin = document.getElementById('origin-select').value;
+                this.dest = document.getElementById('dest-select').value;
+                
+                if (!this.origin || !this.dest) {
+                    showToast('กรุณาเลือกจุดเริ่มต้น และ จุดหมายปลายทาง');
+                    return;
+                }
+                if (this.origin === this.dest) {
+                    showToast('จุดเริ่มต้นและปลายทางไม่ควรเป็นจังหวัดเดียวกัน');
+                    return;
+                }
+
+                // Load Data
+                this.data = mockDB[this.dest] || genericData(this.dest);
+                
+                // UI Setup
+                document.getElementById('planner-title').textContent = `แผนทริป: ${this.dest}`;
+                document.getElementById('planner-subtitle').textContent = `จุดเริ่มต้น: ${this.origin} ➔ ${this.dest}`;
+                
+                this.renderUI();
+                
+                // Form Reset
+                document.getElementById('hotel-nights').value = 1;
+                document.getElementById('food-budget').value = 1500;
+                document.getElementById('custom-hotel-form').style.display = 'none';
+                document.getElementById('custom-hotel-name').value = "";
+                document.getElementById('custom-hotel-price').value = "";
+                
+                app.showView('view-planner');
+                setTimeout(() => this.calculateBudget(), 100);
+            },
+
+            renderUI() {
+                // 1. Attractions
+                document.getElementById('attractions-container').innerHTML = this.data.attractions.map(a => `
+                    <div class="option-content">
+                        <img src="${a.img}" class="option-img" alt="${a.name}">
+                        <h4 style="color:var(--primary-dark); margin-bottom: 5px;">${a.name}</h4>
+                        <p style="font-size: 0.85rem; color: var(--text-light);">${a.desc}</p>
+                    </div>
+                `).join('');
+
+                // 2. Transports (Dynamic Filter via Data Structure)
+                document.getElementById('transport-container').innerHTML = this.data.transports.map((t, idx) => `
+                    <label class="option-label">
+                        <input type="radio" name="transport" value="${t.price}" data-name="${t.type}" ${idx===0 ? 'checked' : ''} onchange="planner.calculateBudget()">
+                        <div class="option-content">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <strong>${t.type}</strong>
+                                <span class="badge"><i class="fa-solid fa-ticket"></i></span>
+                            </div>
+                            <div class="price-tag">${t.price.toLocaleString()} ฿</div>
+                            <p style="font-size: 0.8rem; color: var(--text-light); margin-top:5px;">${t.details}</p>
+                            <p style="font-size: 0.8rem; color: var(--primary); font-weight:500; margin-top:5px;">${t.provider}</p>
+                        </div>
+                    </label>
+                `).join('');
+
+                // 3. Hotels
+                document.getElementById('hotel-container').innerHTML = this.data.hotels.map((h, idx) => `
+                    <label class="option-label">
+                        <input type="radio" name="hotel" value="${h.price}" data-name="${h.name}" ${idx===0 ? 'checked' : ''} onchange="planner.toggleCustomHotel()">
+                        <div class="option-content">
+                            <img src="${h.img}" class="option-img" alt="${h.name}" style="height:120px;">
+                            <strong>${h.name}</strong>
+                            <div class="price-tag">${h.price.toLocaleString()} ฿ <span style="font-size:0.8rem; font-weight:normal; color:var(--text-main);">/ คืน</span></div>
+                            <p style="font-size: 0.8rem; color: var(--text-light); margin-top:5px;"><i class="fa-solid fa-phone"></i> ${h.phone}</p>
+                        </div>
+                    </label>
+                `).join('');
+
+                // 4. Restaurants
+                document.getElementById('restaurant-container').innerHTML = `<ul style="list-style-type: none;">` + 
+                    this.data.restaurants.map(r => `
+                    <li style="margin-bottom: 10px; padding: 10px; background: var(--bg-color); border-radius: 8px;">
+                        <strong style="color:var(--text-main);">${r.name}</strong> <span style="color:#ffb300;">★ ${r.rating}</span><br>
+                        <span style="font-size: 0.85rem; color: var(--text-light);">${r.note}</span>
+                    </li>
+                `).join('') + `</ul>`;
+            },
+
+            toggleCustomHotel() {
+                const selected = document.querySelector('input[name="hotel"]:checked').value;
+                document.getElementById('custom-hotel-form').style.display = (selected === 'custom') ? 'block' : 'none';
+                this.calculateBudget();
+            },
+
+            calculateBudget() {
+                // Transport
+                const transInput = document.querySelector('input[name="transport"]:checked');
+                const transPrice = transInput ? parseInt(transInput.value) : 0;
+                
+                // Hotel
+                const hotelInput = document.querySelector('input[name="hotel"]:checked');
+                let hotelPricePerNight = 0;
+                let hotelNameForMap = "";
+                
+                if (hotelInput && hotelInput.value === 'custom') {
+                    hotelPricePerNight = parseInt(document.getElementById('custom-hotel-price').value) || 0;
+                    hotelNameForMap = document.getElementById('custom-hotel-name').value || "โรงแรม";
+                } else if (hotelInput) {
+                    hotelPricePerNight = parseInt(hotelInput.value);
+                    hotelNameForMap = hotelInput.getAttribute('data-name');
+                }
+                
+                const nights = parseInt(document.getElementById('hotel-nights').value) || 1;
+                const totalHotel = hotelPricePerNight * nights;
+
+                // Food
+                const foodPrice = parseInt(document.getElementById('food-budget').value) || 0;
+
+                // 10% Emergency Fund
+                const subTotal = transPrice + totalHotel + foodPrice;
+                const emergency = Math.round(subTotal * 0.1);
+                const grandTotal = subTotal + emergency;
+
+                // Update Table
+                document.getElementById('sum-transport').textContent = transPrice.toLocaleString();
+                document.getElementById('sum-nights').textContent = nights;
+                document.getElementById('sum-hotel').textContent = totalHotel.toLocaleString();
+                document.getElementById('sum-food').textContent = foodPrice.toLocaleString();
+                document.getElementById('sum-emergency').textContent = emergency.toLocaleString();
+                document.getElementById('sum-total').textContent = grandTotal.toLocaleString();
+
+                // Update Maps (Using Geolocation API via app.userLocation)
+                const attrName = this.data.attractions[0].name;
+                
+                // Origin = Geolocation or "My+Location"
+                const mapOrigin = app.userLocation; 
+                
+                const mapHotelUrl = `https://www.google.com/maps/dir/?api=1&origin=${mapOrigin}&destination=${encodeURIComponent(hotelNameForMap + " " + this.dest)}`;
+                const mapAttrUrl = `https://www.google.com/maps/dir/?api=1&origin=${mapOrigin}&destination=${encodeURIComponent(attrName + " " + this.dest)}`;
+                
+                document.getElementById('map-hotel').href = mapHotelUrl;
+                document.getElementById('map-attraction').href = mapAttrUrl;
+            },
+
+            saveTrip() {
+                const totalText = document.getElementById('sum-total').textContent;
+                const hotelNights = document.getElementById('sum-nights').textContent;
+                
+                const transInput = document.querySelector('input[name="transport"]:checked');
+                const transName = transInput ? transInput.getAttribute('data-name') : "ไม่ระบุ";
+                
+                const hotelInput = document.querySelector('input[name="hotel"]:checked');
+                let hotelName = "";
+                if (hotelInput && hotelInput.value === 'custom') {
+                    hotelName = document.getElementById('custom-hotel-name').value || "ที่พักกำหนดเอง";
+                } else if (hotelInput) {
+                    hotelName = hotelInput.getAttribute('data-name');
+                }
+
+                const tripData = {
+                    id: Date.now(),
+                    route: `${this.origin} ➔ ${this.dest}`,
+                    transport: transName,
+                    hotel: hotelName,
+                    nights: hotelNights,
+                    total: totalText,
+                    date: new Date().toLocaleDateString('th-TH')
+                };
+
+                const userKey = `trips_${app.currentUser}`;
+                let trips = JSON.parse(localStorage.getItem(userKey)) || [];
+                trips.push(tripData);
+                localStorage.setItem(userKey, JSON.stringify(trips));
+
+                showToast('บันทึกทริปของฉันเรียบร้อยแล้ว!');
+            }
+        };
+
+        // === History Module ===
+        const historyModule = {
+            loadHistory() {
+                const userKey = `trips_${app.currentUser}`;
+                const trips = JSON.parse(localStorage.getItem(userKey)) || [];
+                const cont = document.getElementById('history-container');
+
+                if (trips.length === 0) {
+                    cont.innerHTML = `<p style="text-align:center; grid-column: 1/-1; color: var(--text-light); padding: 2rem;">คุณยังไม่เคยบันทึกทริป เริ่มวางแผนกันเลย!</p>`;
+                    return;
+                }
+
+                // Show newest first
+                cont.innerHTML = trips.reverse().map(t => `
+                    <div class="card" style="border-top: 5px solid var(--primary);">
+                        <div style="display:flex; justify-content:space-between; margin-bottom: 12px;">
+                            <h3 style="margin:0; border:none; padding:0; font-size:1.1rem; color:var(--text-main);"><i class="fa-solid fa-route" style="color:var(--primary);"></i> ${t.route}</h3>
+                        </div>
+                        <p style="font-size:0.85rem; color:var(--text-light); margin-bottom:8px;"><i class="fa-regular fa-calendar"></i> บันทึกเมื่อ: ${t.date}</p>
+                        <hr style="border:0; border-top:1px dashed var(--border); margin:10px 0;">
+                        <p style="font-size:0.95rem; margin-bottom:5px;"><i class="fa-solid fa-bus" style="width:25px; color:var(--primary-light);"></i> ${t.transport}</p>
+                        <p style="font-size:0.95rem; margin-bottom:15px;"><i class="fa-solid fa-bed" style="width:25px; color:var(--primary-light);"></i> ${t.hotel} (${t.nights} คืน)</p>
+                        <div style="background: rgba(126, 87, 194, 0.1); padding: 12px; border-radius: 8px; text-align: center;">
+                            <span style="font-size:0.9rem; color:var(--text-light);">งบประมาณที่คาดการณ์</span><br>
+                            <strong style="color:var(--primary-dark); font-size:1.4rem;">${t.total} ฿</strong>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        };
+
+        // Initialize App
+        window.onload = () => { app.init(); };
+    </script>
 </body>
 </html>
